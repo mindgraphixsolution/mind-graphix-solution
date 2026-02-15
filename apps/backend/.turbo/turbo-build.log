@@ -1,0 +1,8 @@
+
+> @mind-graphix/backend@1.0.0 prebuild C:\Users\USER\Desktop\mind-graphix-solution---premium\apps\backend
+> rimraf dist
+
+
+> @mind-graphix/backend@1.0.0 build C:\Users\USER\Desktop\mind-graphix-solution---premium\apps\backend
+> nest build
+
