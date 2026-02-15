@@ -1,15 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
-import Services from '@/components/Services';
-import Portfolio from '@/components/Portfolio';
-import About from '@/components/About';
-import Team from '@/components/Team';
-import CommonSections from '@/components/CommonSections';
-import Contact from '@/components/Contact';
-import Footer from '@/components/Footer';
+import HomeExtras from '@/components/HomeExtras';
+import PageTransition from '@/components/ui/PageTransition';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,20 +15,13 @@ export default function Home() {
   }, []);
 
   if (!mounted) {
-    return <div className="min-h-screen flex items-center justify-center">Chargement...</div>;
+    return null;
   }
 
   return (
-    <main>
-      <Navbar />
+    <PageTransition>
       <Hero />
-      <Services />
-      <Portfolio />
-      <About />
-      <Team />
-      <CommonSections />
-      <Contact />
-      <Footer />
-    </main>
+      <HomeExtras />
+    </PageTransition>
   );
 }

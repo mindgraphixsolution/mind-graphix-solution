@@ -10,13 +10,16 @@ import {
   UseGuards,
   Version,
 } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { IntegrationsService } from './integrations.service';
 import { CreateIntegrationDto, UpdateIntegrationDto } from './dtos';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
-import { UserRole } from '@prisma/client';
+import { UserRole, IntegrationType } from '@prisma/client';
 
+@ApiTags('Integrations')
+@ApiBearerAuth()
 @Controller('integrations')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class IntegrationsController {
@@ -25,6 +28,8 @@ export class IntegrationsController {
   @Version('1')
   @Post()
   @Roles(UserRole.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Create a new integration' })
+  @ApiResponse({ status: 201, description: 'Integration created successfully' })
   async create(@Body() dto: CreateIntegrationDto) {
     return this.integrationService.create(dto);
   }
@@ -32,14 +37,16 @@ export class IntegrationsController {
   @Version('1')
   @Get()
   @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @ApiOperation({ summary: 'Get all integrations' })
+  @ApiQuery({ name: 'type', required: false, enum: IntegrationType })
+  @ApiQuery({ name: 'isActive', required: false, type: Boolean })
+  @ApiResponse({ status: 200, description: 'Return integrations list' })
   async findAll(
-    @Query('type') type?: string,
+    @Query('type') type?: IntegrationType,
     @Query('isActive') isActive?: string,
   ) {
-    // Casting type to IntegrationType if provided
-    const typeFilter = type ? (type as any) : undefined;
     return this.integrationService.findAll({
-      type: typeFilter,
+      type,
       isActive: isActive === 'true' ? true : isActive === 'false' ? false : undefined,
     });
   }
@@ -47,6 +54,8 @@ export class IntegrationsController {
   @Version('1')
   @Get(':id')
   @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @ApiOperation({ summary: 'Get an integration by ID' })
+  @ApiResponse({ status: 200, description: 'Return integration data' })
   async findOne(@Param('id') id: string) {
     return this.integrationService.findOne(id);
   }
@@ -54,6 +63,8 @@ export class IntegrationsController {
   @Version('1')
   @Get('by-name/:name')
   @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @ApiOperation({ summary: 'Get an integration by name' })
+  @ApiResponse({ status: 200, description: 'Return integration data' })
   async findByName(@Param('name') name: string) {
     return this.integrationService.findByName(name);
   }
@@ -61,6 +72,8 @@ export class IntegrationsController {
   @Version('1')
   @Put(':id')
   @Roles(UserRole.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Update an integration' })
+  @ApiResponse({ status: 200, description: 'Integration updated successfully' })
   async update(
     @Param('id') id: string,
     @Body() dto: UpdateIntegrationDto,
@@ -71,6 +84,8 @@ export class IntegrationsController {
   @Version('1')
   @Delete(':id')
   @Roles(UserRole.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Delete an integration' })
+  @ApiResponse({ status: 200, description: 'Integration deleted successfully' })
   async delete(@Param('id') id: string) {
     return this.integrationService.delete(id);
   }
@@ -82,6 +97,8 @@ export class IntegrationsController {
   @Version('1')
   @Post(':id/activate')
   @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @ApiOperation({ summary: 'Activate an integration' })
+  @ApiResponse({ status: 200, description: 'Integration activated successfully' })
   async activate(@Param('id') id: string) {
     return this.integrationService.activate(id);
   }
@@ -89,6 +106,8 @@ export class IntegrationsController {
   @Version('1')
   @Post(':id/deactivate')
   @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @ApiOperation({ summary: 'Deactivate an integration' })
+  @ApiResponse({ status: 200, description: 'Integration deactivated successfully' })
   async deactivate(@Param('id') id: string) {
     return this.integrationService.deactivate(id);
   }
@@ -96,6 +115,8 @@ export class IntegrationsController {
   @Version('1')
   @Get(':id/status')
   @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
+  @ApiOperation({ summary: 'Get the status of an integration' })
+  @ApiResponse({ status: 200, description: 'Return integration status' })
   async getStatus(@Param('id') id: string) {
     return this.integrationService.getStatus(id);
   }

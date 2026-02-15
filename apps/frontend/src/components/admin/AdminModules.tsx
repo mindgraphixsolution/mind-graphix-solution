@@ -38,6 +38,10 @@ export const MediaLibrary = ({ onSelect }: { onSelect?: (url: string) => void })
   const handleFiles = async (files: FileList) => {
     setUploading(true);
     const file = files[0];
+    if (!file) {
+      setUploading(false);
+      return;
+    }
     const reader = new FileReader();
     
     reader.onloadend = () => {

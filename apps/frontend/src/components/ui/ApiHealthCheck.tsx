@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { CheckCircle, AlertCircle, Loader } from 'lucide-react';
+import { API_BASE_URL, API_ENDPOINTS } from '@/lib/api/config';
 
 export function ApiHealthCheck() {
   const [status, setStatus] = useState<'checking' | 'ok' | 'error'>('checking');
@@ -9,11 +10,17 @@ export function ApiHealthCheck() {
   useEffect(() => {
     const checkHealth = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/health`);
+        const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.HEALTH.CHECK}`);
         if (response.ok) {
           setStatus('ok');
         } else {
-          setStatus('error');
+          // Fallback if versioned health is not available
+          const fallbackResponse = await fetch(`${API_BASE_URL}${API_ENDPOINTS.HEALTH.SERVER}`);
+          if (fallbackResponse.ok) {
+            setStatus('ok');
+          } else {
+            setStatus('error');
+          }
         }
       } catch {
         setStatus('error');

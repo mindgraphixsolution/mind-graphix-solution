@@ -7,18 +7,22 @@ const Preloader: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setProgress((prev) => {
-        const next = prev + Math.random() * 15; // Augmenté de 10
-        if (next >= 100) {
-          clearInterval(timer);
-          return 100;
-        }
-        return next;
-      });
-    }, 100); // Réduit de 150
+    let startTimestamp: number | null = null;
+    const duration = 2000; // 2 secondes pour le chargement complet
 
-    return () => clearInterval(timer);
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const elapsed = timestamp - startTimestamp;
+      const progressValue = Math.min((elapsed / duration) * 100, 100);
+      
+      setProgress(progressValue);
+
+      if (progressValue < 100) {
+        window.requestAnimationFrame(step);
+      }
+    };
+
+    window.requestAnimationFrame(step);
   }, []);
 
   useEffect(() => {
@@ -49,8 +53,8 @@ const Preloader: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
         <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden relative">
           <motion.div 
             className="h-full bg-accent absolute left-0 top-0"
-            style={{ width: `${progress}%` }}
-            transition={{ ease: "linear" }}
+            animate={{ width: `${progress}%` }}
+            transition={{ duration: 0.1, ease: "linear" }}
           />
         </div>
 

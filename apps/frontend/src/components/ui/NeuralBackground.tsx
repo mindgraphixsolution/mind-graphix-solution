@@ -54,7 +54,7 @@ const NeuralBackground: React.FC = () => {
         this.size = Math.random() * 2 + 1;
         // Brand colors randomized
         const colors = ['rgba(94, 53, 177, ', 'rgba(255, 171, 0, ', 'rgba(255, 255, 255, '];
-        this.color = colors[Math.floor(Math.random() * colors.length)];
+        this.color = colors[Math.floor(Math.random() * colors.length)]!;
       }
 
       update() {
@@ -104,8 +104,11 @@ const NeuralBackground: React.FC = () => {
     let isVisible = true;
 
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        isVisible = entry.isIntersecting;
+      (entries) => {
+        const entry = entries[0];
+        if (entry) {
+          isVisible = entry.isIntersecting;
+        }
       },
       { threshold: 0.1 }
     );
@@ -121,9 +124,13 @@ const NeuralBackground: React.FC = () => {
       
       // Draw Connections first
       for (let a = 0; a < particles.length; a++) {
+        const pA = particles[a];
+        if (!pA) continue;
         for (let b = a; b < particles.length; b++) {
-          const dx = particles[a].x - particles[b].x;
-          const dy = particles[a].y - particles[b].y;
+          const pB = particles[b];
+          if (!pB) continue;
+          const dx = pA.x - pB.x;
+          const dy = pA.y - pB.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
 
           if (distance < connectionDistance) {
@@ -131,8 +138,8 @@ const NeuralBackground: React.FC = () => {
             ctx.beginPath();
             ctx.strokeStyle = `rgba(100, 116, 139, ${opacity * 0.2})`; // Slate-500 equivalent
             ctx.lineWidth = 1;
-            ctx.moveTo(particles[a].x, particles[a].y);
-            ctx.lineTo(particles[b].x, particles[b].y);
+            ctx.moveTo(pA.x, pA.y);
+            ctx.lineTo(pB.x, pB.y);
             ctx.stroke();
           }
         }
@@ -140,8 +147,10 @@ const NeuralBackground: React.FC = () => {
 
       // Update & Draw Particles
       particles.forEach(p => {
-        p.update();
-        p.draw();
+        if (p) {
+          p.update();
+          p.draw();
+        }
       });
 
       animationFrameId = requestAnimationFrame(animate);

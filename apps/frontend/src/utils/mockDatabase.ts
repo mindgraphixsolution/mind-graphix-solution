@@ -152,9 +152,15 @@ export const mockDB = {
   },
 
   getTestimonials: () => JSON.parse(localStorage.getItem(KEYS.TESTIMONIALS) || '[]'),
+  saveTestimonials: (list: any[]) => { localStorage.setItem(KEYS.TESTIMONIALS, JSON.stringify(list)); triggerUpdate(); },
   saveTestimonial: (test: any) => {
     const list = mockDB.getTestimonials();
-    const newList = test.id ? list.map((t: any) => t.id === test.id ? test : t) : [...list, { ...test, id: Date.now() }];
+    const newList = test.id ? list.map((t: any) => t.id === test.id ? test : t) : [...list, { ...test, id: Date.now().toString() }];
+    localStorage.setItem(KEYS.TESTIMONIALS, JSON.stringify(newList));
+    triggerUpdate();
+  },
+  deleteTestimonial: (id: string | number) => {
+    const newList = mockDB.getTestimonials().filter((t: any) => t.id !== id);
     localStorage.setItem(KEYS.TESTIMONIALS, JSON.stringify(newList));
     triggerUpdate();
   },

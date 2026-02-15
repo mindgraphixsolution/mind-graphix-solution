@@ -34,9 +34,11 @@ const DEFAULT_PREFERENCES: Preferences = {
 export const PreferencesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [preferences, setPreferences] = useState<Preferences>(DEFAULT_PREFERENCES);
   const [focusMode, setFocusMode] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   // Load preferences from DB on init and update
   useEffect(() => {
+    setMounted(true);
     const update = () => setPreferences(mockDB.getPreferences());
     update();
     window.addEventListener('mgs_db_update', update);
@@ -45,6 +47,7 @@ export const PreferencesProvider: React.FC<{ children: ReactNode }> = ({ childre
 
   // Keyboard shortcut for Focus Mode
   useEffect(() => {
+    if (!mounted) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       // Toggle Focus Mode with 'f' if no input focused
       if (e.key === (preferences.shortcuts['toggle_focus'] || 'f') && 
@@ -54,12 +57,13 @@ export const PreferencesProvider: React.FC<{ children: ReactNode }> = ({ childre
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [preferences.shortcuts]);
+  }, [preferences.shortcuts, mounted]);
 
   // Apply Accent Color to CSS Variables
   useEffect(() => {
+    if (!mounted) return;
     document.documentElement.style.setProperty('--primary-color', preferences.accentColor);
-  }, [preferences.accentColor]);
+  }, [preferences.accentColor, mounted]);
 
   const updatePreference = (key: keyof Preferences, value: any) => {
     const newPrefs = { ...preferences, [key]: value };

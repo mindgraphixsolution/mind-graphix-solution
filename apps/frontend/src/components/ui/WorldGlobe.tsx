@@ -46,8 +46,11 @@ const WorldGlobe: React.FC = () => {
     let isVisible = true;
 
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        isVisible = entry.isIntersecting;
+      (entries) => {
+        const entry = entries[0];
+        if (entry) {
+          isVisible = entry.isIntersecting;
+        }
       },
       { threshold: 0.1 }
     );

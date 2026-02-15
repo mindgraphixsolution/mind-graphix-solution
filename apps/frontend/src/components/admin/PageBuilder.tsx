@@ -286,23 +286,32 @@ const PageBuilder = () => {
   const undo = () => {
     if (historyIndex > 0) {
       const newIndex = historyIndex - 1;
-      setHistoryIndex(newIndex);
-      setElements(JSON.parse(JSON.stringify(history[newIndex].data)));
+      const step = history[newIndex];
+      if (step) {
+        setHistoryIndex(newIndex);
+        setElements(JSON.parse(JSON.stringify(step.data)));
+      }
     }
   };
 
   const redo = () => {
     if (historyIndex < history.length - 1) {
       const newIndex = historyIndex + 1;
-      setHistoryIndex(newIndex);
-      setElements(JSON.parse(JSON.stringify(history[newIndex].data)));
+      const step = history[newIndex];
+      if (step) {
+        setHistoryIndex(newIndex);
+        setElements(JSON.parse(JSON.stringify(step.data)));
+      }
     }
   };
 
   const jumpToHistory = (index: number) => {
-    setHistoryIndex(index);
-    setElements(JSON.parse(JSON.stringify(history[index].data)));
-    setShowHistory(false);
+    const step = history[index];
+    if (step) {
+      setHistoryIndex(index);
+      setElements(JSON.parse(JSON.stringify(step.data)));
+      setShowHistory(false);
+    }
   };
 
   // --- VERSIONING LOGIC ---
@@ -331,7 +340,10 @@ const PageBuilder = () => {
 
   const cancelVersionPreview = () => {
     // Revert to current history state
-    setElements(JSON.parse(JSON.stringify(history[historyIndex].data)));
+    const step = history[historyIndex];
+    if (step) {
+      setElements(JSON.parse(JSON.stringify(step.data)));
+    }
     setVersionPreviewMode(null);
   };
 

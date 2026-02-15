@@ -1,8 +1,9 @@
 import axios, { AxiosInstance, AxiosError } from 'axios';
+import { API_BASE_URL } from './api/config';
 
 // Create axios instance
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
+  baseURL: API_BASE_URL,
   withCredentials: true,
   timeout: 30000,
   headers: {

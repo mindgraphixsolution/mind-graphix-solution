@@ -25,34 +25,41 @@ import {
   Edit3
 } from 'lucide-react';
 import { QuoteRequest } from '../types';
+import { useLanguage } from '../context/LanguageContext';
 
-// Types de projets
-const PROJECT_TYPES = [
-  { id: 'web', title: 'Site Web', icon: Globe, desc: 'Vitrine, E-commerce, SaaS' },
-  { id: 'mobile', title: 'App Mobile', icon: Smartphone, desc: 'iOS, Android, PWA' },
-  { id: 'design', title: 'Branding', icon: Palette, desc: 'Logo, Charte, UI/UX' },
-  { id: 'marketing', title: 'Marketing', icon: BarChart, desc: 'SEO, Ads, Social' },
-  { id: 'motion', title: 'Motion', icon: Video, desc: 'Vidéo, Animation' },
-  { id: 'software', title: 'Logiciel', icon: Cpu, desc: 'CRM, ERP, Outils' },
+/**
+ * Composant Quote - Formulaire de demande de devis interactif en 6 étapes.
+ * Architecturé pour le Design System Mind Graphix avec support bilingue et mode sombre.
+ */
+
+// Types de projets avec traductions
+const getProjectTypes = (t: any) => [
+  { id: 'web', title: t('quote.types.web.title'), icon: Globe, desc: t('quote.types.web.desc') },
+  { id: 'mobile', title: t('quote.types.mobile.title'), icon: Smartphone, desc: t('quote.types.mobile.desc') },
+  { id: 'design', title: t('quote.types.design.title'), icon: Palette, desc: t('quote.types.design.desc') },
+  { id: 'marketing', title: t('quote.types.marketing.title'), icon: BarChart, desc: t('quote.types.marketing.desc') },
+  { id: 'motion', title: t('quote.types.motion.title'), icon: Video, desc: t('quote.types.motion.desc') },
+  { id: 'software', title: t('quote.types.software.title'), icon: Cpu, desc: t('quote.types.software.desc') },
 ];
 
-// Nature du projet
-const PROJECT_NATURE = [
-  { id: 'creation', title: 'Création Complète', desc: 'Partir de zéro' },
-  { id: 'redesign', title: 'Refonte / Redesign', desc: 'Améliorer l\'existant' },
-  { id: 'maintenance', title: 'Maintenance', desc: 'Mises à jour & correctifs' },
+// Nature du projet avec traductions
+const getProjectNature = (t: any) => [
+  { id: 'creation', title: t('quote.nature.creation.title'), desc: t('quote.nature.creation.desc') },
+  { id: 'redesign', title: t('quote.nature.redesign.title'), desc: t('quote.nature.redesign.desc') },
+  { id: 'maintenance', title: t('quote.nature.maintenance.title'), desc: t('quote.nature.maintenance.desc') },
 ];
 
-// Fonctionnalités additionnelles
-const FEATURES = [
-  { id: 'cms', label: 'Gestion de contenu (CMS)', icon: Layout },
-  { id: 'ecommerce', label: 'Paiement en ligne', icon: ShoppingCart },
-  { id: 'multilang', label: 'Multilingue', icon: Globe2 },
-  { id: 'seo', label: 'Optimisation SEO avancée', icon: Zap },
-  { id: 'auth', label: 'Espace Membre / Auth', icon: Shield },
-  { id: 'api', label: 'Intégration API / CRM', icon: Database },
+// Fonctionnalités additionnelles avec traductions
+const getFeatures = (t: any) => [
+  { id: 'cms', label: t('quote.features.cms'), icon: Layout },
+  { id: 'ecommerce', label: t('quote.features.ecommerce'), icon: ShoppingCart },
+  { id: 'multilang', label: t('quote.features.multilang'), icon: Globe2 },
+  { id: 'seo', label: t('quote.features.seo'), icon: Zap },
+  { id: 'auth', label: t('quote.features.auth'), icon: Shield },
+  { id: 'api', label: t('quote.features.api'), icon: Database },
 ];
 
+// Gammes de budget (constantes car numériques/unités fixes)
 const BUDGET_RANGES = [
   '< 500.000 FCFA',
   '500k - 1M FCFA',
@@ -67,8 +74,14 @@ interface QuoteProps {
 }
 
 const Quote: React.FC<QuoteProps> = ({ onQuoteSubmit }) => {
+  const { t } = useLanguage();
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
+  
+  // Chargement des données traduites
+  const PROJECT_TYPES = getProjectTypes(t);
+  const PROJECT_NATURE = getProjectNature(t);
+  const FEATURES = getFeatures(t);
   
   const [formData, setFormData] = useState({
     projectType: '',
@@ -94,47 +107,49 @@ const Quote: React.FC<QuoteProps> = ({ onQuoteSubmit }) => {
     let isValid = true;
 
     if (currentStep === 1) {
-      if (!formData.projectType) { newErrors.projectType = "Veuillez sélectionner un type de projet."; isValid = false; }
-      if (!formData.projectNature) { newErrors.projectNature = "Veuillez sélectionner la nature du projet."; isValid = false; }
+      if (!formData.projectType) { newErrors.projectType = t('quote.error_project_type'); isValid = false; }
+      if (!formData.projectNature) { newErrors.projectNature = t('quote.error_project_nature'); isValid = false; }
     }
     
     if (currentStep === 3) {
-      if (!formData.description.trim()) { newErrors.description = "La description est obligatoire pour comprendre votre besoin."; isValid = false; }
-      else if (formData.description.length < 20) { newErrors.description = "Veuillez détailler un peu plus (min 20 caractères)."; isValid = false; }
+      if (!formData.description.trim()) { newErrors.description = t('quote.error_description'); isValid = false; }
+      else if (formData.description.length < 20) { newErrors.description = t('quote.error_description_short'); isValid = false; }
     }
 
     if (currentStep === 4) {
-      if (!formData.budget) { newErrors.budget = "Veuillez sélectionner une fourchette de budget."; isValid = false; }
+      if (!formData.budget) { newErrors.budget = t('quote.error_budget'); isValid = false; }
     }
 
     if (currentStep === 5) {
-      if (!formData.name.trim()) { newErrors.name = "Le nom est obligatoire."; isValid = false; }
-      if (!formData.email.trim()) { newErrors.email = "L'email est obligatoire."; isValid = false; }
-      else if (!/\S+@\S+\.\S+/.test(formData.email)) { newErrors.email = "Email invalide."; isValid = false; }
-      if (!formData.phone.trim()) { newErrors.phone = "Le téléphone est obligatoire."; isValid = false; }
+      if (!formData.name.trim()) { newErrors.name = t('quote.error_name'); isValid = false; }
+      if (!formData.email.trim()) { newErrors.email = t('quote.error_email'); isValid = false; }
+      else if (!/\S+@\S+\.\S+/.test(formData.email)) { newErrors.email = t('quote.error_email_invalid'); isValid = false; }
+      if (!formData.phone.trim()) { newErrors.phone = t('quote.error_phone'); isValid = false; }
     }
 
     setErrors(newErrors);
     return isValid;
   };
 
-  // Navigation
+  // Navigation entre les étapes
   const handleNext = () => {
     if (validateStep(step)) {
       if (step < 6) setStep(step + 1);
+      window.scrollTo({ top: document.getElementById('devis')?.offsetTop || 0, behavior: 'smooth' });
     }
   };
 
   const handlePrev = () => {
     if (step > 1) setStep(step - 1);
+    window.scrollTo({ top: document.getElementById('devis')?.offsetTop || 0, behavior: 'smooth' });
   };
 
   const goToStep = (s: number) => setStep(s);
 
-  // Gestion des champs
+  // Mise à jour des champs du formulaire
   const updateForm = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    // Clear error on change
+    // Effacer l'erreur lors de la modification
     if (errors[field]) {
       setErrors(prev => {
         const newErr = { ...prev };
@@ -155,23 +170,25 @@ const Quote: React.FC<QuoteProps> = ({ onQuoteSubmit }) => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFormData(prev => ({ ...prev, file: e.target.files![0] }));
+      setFormData(prev => ({ ...prev, file: e.target.files![0] as File | null }));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateStep(5)) return; // Double check final step
+    
     setIsSubmitting(true);
     
-    // Simulation API
+    // Simulation d'envoi API
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    // Construction de l'objet QuoteRequest
+    // Construction de l'objet final
     const newQuote: QuoteRequest = {
-      id: Math.random().toString(36).substr(2, 9),
+      id: Math.random().toString(36).substring(2, 11).toUpperCase(),
       projectType: PROJECT_TYPES.find(t => t.id === formData.projectType)?.title || formData.projectType,
       projectNature: PROJECT_NATURE.find(n => n.id === formData.projectNature)?.title || formData.projectNature,
-      features: formData.features,
+      features: formData.features.map(f => FEATURES.find(feat => feat.id === f)?.label || f),
       description: formData.description,
       budget: formData.budget,
       deadline: formData.deadline,
@@ -183,7 +200,6 @@ const Quote: React.FC<QuoteProps> = ({ onQuoteSubmit }) => {
       timestamp: new Date()
     };
 
-    // Notification parent
     if (onQuoteSubmit) {
       onQuoteSubmit(newQuote);
     }
@@ -192,7 +208,7 @@ const Quote: React.FC<QuoteProps> = ({ onQuoteSubmit }) => {
     setIsSuccess(true);
   };
 
-  // Animations
+  // Variantes d'animation Framer Motion
   const variants = {
     enter: (direction: number) => ({ x: direction > 0 ? 50 : -50, opacity: 0 }),
     center: { x: 0, opacity: 1 },
@@ -201,27 +217,46 @@ const Quote: React.FC<QuoteProps> = ({ onQuoteSubmit }) => {
 
   const MotionDiv = motion.div as any;
 
-  // Écran de succès
+  // Écran de succès après envoi
   if (isSuccess) {
     return (
-      <Section id="devis" className="bg-slate-50 dark:bg-dark">
+      <Section id="devis" className="bg-[var(--bg-primary)]">
         <MotionDiv 
           initial={{ scale: 0.8, opacity: 0 }}
           whileInView={{ scale: 1, opacity: 1 }}
-          className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 p-12 rounded-3xl text-center max-w-lg mx-auto shadow-2xl"
+          className="glass border border-[var(--border-color)] p-12 rounded-[2.5rem] text-center max-w-lg mx-auto shadow-2xl"
         >
-          <div className="w-24 h-24 bg-green-100 dark:bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 size={48} className="text-green-600 dark:text-green-400" />
+          <div className="w-24 h-24 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle2 size={48} className="text-green-500" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Demande Envoyée !</h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-8">
-            Merci <strong>{formData.name}</strong>. Votre dossier a été transmis à notre équipe. Une notification a été envoyée aux chefs de projet. Vous recevrez une réponse sous 24h.
+          <h2 className="text-3xl font-black text-[var(--text-main)] mb-4 tracking-tighter">
+            {t('quote.success_title')}
+          </h2>
+          <p className="text-[var(--text-muted)] mb-8 font-light leading-relaxed">
+            {t('quote.success_desc').replace('{name}', formData.name)}
           </p>
           <button 
-            onClick={() => { setIsSuccess(false); setStep(1); setFormData({ ...formData, projectType: '', features: [], file: null, description: '', name: '', email: '', phone: '' }); }}
-            className="inline-block px-8 py-3 bg-primary text-white font-bold rounded-full hover:bg-accent hover:text-dark transition-all"
+            onClick={() => { 
+              setIsSuccess(false); 
+              setStep(1); 
+              setFormData({
+                projectType: '',
+                projectNature: '',
+                features: [],
+                description: '',
+                budget: '',
+                deadline: '',
+                file: null,
+                name: '',
+                company: '',
+                email: '',
+                phone: '',
+                contactMethod: 'email'
+              }); 
+            }}
+            className="btn-architect"
           >
-            Nouvelle demande
+            {t('quote.new_request')}
           </button>
         </MotionDiv>
       </Section>
@@ -229,125 +264,146 @@ const Quote: React.FC<QuoteProps> = ({ onQuoteSubmit }) => {
   }
 
   return (
-    <Section id="devis" className="bg-slate-50 dark:bg-dark">
-      <div className="text-center mb-10">
+    <Section id="devis" className="bg-[var(--bg-primary)]">
+      {/* En-tête de section */}
+      <div className="text-center mb-16">
         <MotionDiv initial={{ opacity: 0, y: -20 }} whileInView={{ opacity: 1, y: 0 }}>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            Configurez votre <span className="text-accent">Projet</span>
+          <h2 className="text-4xl md:text-6xl font-black text-[var(--text-main)] mb-6 tracking-tighter">
+            {t('quote.title')} <span className="text-[var(--accent-color)]">{t('quote.title_span')}</span>
           </h2>
-          <div className="w-20 h-1.5 bg-accent mx-auto rounded-full mb-6"></div>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Un formulaire complet en 6 étapes pour définir votre besoin. Tous les champs marqués d'une étoile (*) sont obligatoires.
+          <div className="w-20 h-1.5 bg-[var(--accent-color)] mx-auto rounded-full mb-8"></div>
+          <p className="text-xl text-[var(--text-muted)] max-w-3xl mx-auto font-light leading-relaxed">
+            {t('quote.subtitle')}
           </p>
         </MotionDiv>
       </div>
 
-      {/* Progress Bar */}
-      <div className="max-w-4xl mx-auto mb-10 px-4">
+      {/* Barre de progression interactive */}
+      <div className="max-w-4xl mx-auto mb-16 px-4">
         <div className="flex items-center justify-between relative">
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-gray-200 dark:bg-white/10 rounded-full -z-10"></div>
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-[var(--border-color)] rounded-full -z-10"></div>
           <div 
-            className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-accent rounded-full -z-10 transition-all duration-500"
+            className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[var(--accent-color)] rounded-full -z-10 transition-all duration-700 ease-out"
             style={{ width: `${((step - 1) / 5) * 100}%` }}
           ></div>
 
           {[1, 2, 3, 4, 5, 6].map((s) => (
-            <div key={s} className={`flex flex-col items-center gap-2 ${step >= s ? 'opacity-100' : 'opacity-40'}`}>
-              <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 ${
-                step >= s ? 'bg-accent text-dark scale-110 shadow-lg' : 'bg-gray-200 dark:bg-white/10 text-gray-500 dark:text-gray-400'
+            <div key={s} className={`flex flex-col items-center gap-3 ${step >= s ? 'opacity-100' : 'opacity-30'}`}>
+              <div 
+                onClick={() => s < step && goToStep(s)}
+                className={`w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center font-black text-sm transition-all duration-500 cursor-pointer ${
+                step >= s ? 'bg-[var(--accent-color)] text-black scale-110 shadow-lg' : 'bg-[var(--bg-surface)] border border-[var(--border-color)] text-[var(--text-muted)]'
               }`}>
-                {s === 6 ? <CheckCircle2 size={16} /> : s}
+                {s === 6 ? <CheckCircle2 size={18} /> : s}
               </div>
-              <span className="text-[10px] md:text-xs font-semibold uppercase tracking-wider hidden sm:block text-gray-600 dark:text-gray-400">
-                {s === 1 ? 'Projet' : s === 2 ? 'Options' : s === 3 ? 'Détails' : s === 4 ? 'Budget' : s === 5 ? 'Infos' : 'Récap'}
+              <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] hidden sm:block text-[var(--text-muted)]">
+                {s === 1 ? t('quote.step_1') : s === 2 ? t('quote.step_2') : s === 3 ? t('quote.step_3') : s === 4 ? t('quote.step_4') : s === 5 ? t('quote.step_5') : t('quote.step_6')}
               </span>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Form Container */}
+      {/* Conteneur principal du formulaire */}
       <div className="max-w-5xl mx-auto">
-        <div className="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-3xl p-6 md:p-10 shadow-xl backdrop-blur-sm min-h-[500px] flex flex-col justify-between">
-          <form onSubmit={handleSubmit} className="flex-grow flex flex-col">
+        <div className="glass border border-[var(--border-color)] rounded-[2.5rem] p-8 md:p-12 shadow-2xl min-h-[600px] flex flex-col justify-between relative overflow-hidden">
+          {/* Effets visuels de fond */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--accent-color)] opacity-[0.03] blur-[100px] rounded-full pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500 opacity-[0.02] blur-[100px] rounded-full pointer-events-none" />
+          
+          <form onSubmit={handleSubmit} className="flex-grow flex flex-col relative z-10">
             <AnimatePresence mode="wait" custom={step}>
               
-              {/* STEP 1: NATURE DU PROJET */}
+              {/* ÉTAPE 1: TYPE ET NATURE DU PROJET */}
               {step === 1 && (
-                <MotionDiv key="step1" custom={step} initial="enter" animate="center" exit="exit" variants={variants} transition={{ duration: 0.3 }} className="flex-grow">
-                  <h3 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">Type de projet <span className="text-red-500">*</span></h3>
+                <MotionDiv key="step1" custom={step} initial="enter" animate="center" exit="exit" variants={variants} transition={{ duration: 0.4 }} className="flex-grow">
+                  <h3 className="text-2xl font-black mb-8 text-center text-[var(--text-main)] tracking-tight">
+                    {t('quote.project_type')} <span className="text-[var(--accent-color)]">*</span>
+                  </h3>
                   
                   {errors.projectType && (
-                    <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg flex items-center gap-2 justify-center">
+                    <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl flex items-center gap-3 justify-center animate-pulse">
                       <AlertCircle size={18} /> {errors.projectType}
                     </div>
                   )}
 
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-12">
                     {PROJECT_TYPES.map((type) => (
                       <div 
                         key={type.id}
                         onClick={() => updateForm('projectType', type.id)}
-                        className={`cursor-pointer rounded-2xl p-4 md:p-6 border-2 transition-all duration-300 flex flex-col items-center text-center gap-3 hover:shadow-lg ${
+                        className={`cursor-pointer rounded-2xl p-6 border-2 transition-all duration-500 flex flex-col items-center text-center gap-4 group ${
                           formData.projectType === type.id 
-                            ? 'border-accent bg-accent/5 dark:bg-accent/10' 
-                            : 'border-transparent bg-gray-50 dark:bg-white/5 hover:border-primary/30 dark:hover:border-white/20'
+                            ? 'border-[var(--accent-color)] bg-[var(--accent-color)]/5 shadow-[0_0_30px_rgba(var(--accent-color-rgb),0.1)]' 
+                            : 'border-transparent bg-[var(--bg-surface)] hover:border-[var(--border-color)]'
                         }`}
                       >
-                        <type.icon size={28} className={formData.projectType === type.id ? 'text-accent' : 'text-primary dark:text-gray-400'} />
-                        <div>
-                          <h4 className={`font-bold text-sm md:text-base ${formData.projectType === type.id ? 'text-accent' : 'text-gray-900 dark:text-white'}`}>{type.title}</h4>
+                        <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-500 ${
+                          formData.projectType === type.id ? 'bg-[var(--accent-color)] text-black' : 'bg-[var(--bg-primary)] text-[var(--text-muted)] group-hover:text-[var(--text-main)]'
+                        }`}>
+                          <type.icon size={28} />
                         </div>
+                        <h4 className={`font-bold text-base ${formData.projectType === type.id ? 'text-[var(--text-main)]' : 'text-[var(--text-muted)]'}`}>
+                          {type.title}
+                        </h4>
                       </div>
                     ))}
                   </div>
 
-                  <h3 className="text-xl font-bold mb-4 text-center text-gray-900 dark:text-white">Nature de la demande <span className="text-red-500">*</span></h3>
+                  <h3 className="text-xl font-black mb-6 text-center text-[var(--text-main)] tracking-tight">
+                    {t('quote.project_nature')} <span className="text-[var(--accent-color)]">*</span>
+                  </h3>
                    {errors.projectNature && (
-                    <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg flex items-center gap-2 justify-center">
+                    <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl flex items-center gap-3 justify-center animate-pulse">
                       <AlertCircle size={18} /> {errors.projectNature}
                     </div>
                   )}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {PROJECT_NATURE.map((nat) => (
                       <div
                         key={nat.id}
                         onClick={() => updateForm('projectNature', nat.id)}
-                        className={`cursor-pointer rounded-xl p-4 border-2 transition-all ${
+                        className={`cursor-pointer rounded-2xl p-6 border-2 transition-all duration-500 ${
                           formData.projectNature === nat.id
-                            ? 'border-accent bg-accent/5 dark:bg-accent/10'
-                            : 'border-transparent bg-gray-50 dark:bg-white/5 hover:border-gray-300'
+                            ? 'border-[var(--accent-color)] bg-[var(--accent-color)]/5'
+                            : 'border-transparent bg-[var(--bg-surface)] hover:border-[var(--border-color)]'
                         }`}
                       >
-                        <h4 className={`font-bold ${formData.projectNature === nat.id ? 'text-accent' : 'text-gray-900 dark:text-white'}`}>{nat.title}</h4>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">{nat.desc}</p>
+                        <h4 className={`font-bold mb-2 ${formData.projectNature === nat.id ? 'text-[var(--text-main)]' : 'text-[var(--text-muted)]'}`}>
+                          {nat.title}
+                        </h4>
+                        <p className="text-xs text-[var(--text-muted)] leading-relaxed">{nat.desc}</p>
                       </div>
                     ))}
                   </div>
                 </MotionDiv>
               )}
 
-              {/* STEP 2: FONCTIONNALITÉS */}
+              {/* ÉTAPE 2: FONCTIONNALITÉS OPTIONNELLES */}
               {step === 2 && (
-                <MotionDiv key="step2" custom={step} initial="enter" animate="center" exit="exit" variants={variants} transition={{ duration: 0.3 }} className="flex-grow">
-                  <h3 className="text-2xl font-bold mb-2 text-center text-gray-900 dark:text-white">Fonctionnalités (Optionnel)</h3>
-                  <p className="text-center text-gray-500 dark:text-gray-400 mb-8 text-sm">Sélectionnez les éléments techniques dont vous avez besoin.</p>
+                <MotionDiv key="step2" custom={step} initial="enter" animate="center" exit="exit" variants={variants} transition={{ duration: 0.4 }} className="flex-grow">
+                  <h3 className="text-2xl font-black mb-2 text-center text-[var(--text-main)] tracking-tight">
+                    {t('quote.features_title')}
+                  </h3>
+                  <p className="text-center text-[var(--text-muted)] mb-10 font-light">{t('quote.features_subtitle')}</p>
                   
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <div className="grid md:grid-cols-2 gap-6">
                     {FEATURES.map((feat) => (
                       <div
                         key={feat.id}
                         onClick={() => toggleFeature(feat.id)}
-                        className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                        className={`flex items-center gap-5 p-6 rounded-2xl border-2 cursor-pointer transition-all duration-500 ${
                           formData.features.includes(feat.id)
-                            ? 'border-accent bg-accent/5 dark:bg-accent/10'
-                            : 'border-transparent bg-gray-50 dark:bg-white/5 hover:border-gray-300 dark:hover:border-white/20'
+                            ? 'border-[var(--accent-color)] bg-[var(--accent-color)]/5'
+                            : 'border-transparent bg-[var(--bg-surface)] hover:border-[var(--border-color)]'
                         }`}
                       >
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${formData.features.includes(feat.id) ? 'bg-accent text-dark' : 'bg-gray-200 dark:bg-white/10 text-gray-500'}`}>
-                          {formData.features.includes(feat.id) ? <CheckCircle2 size={20} /> : <feat.icon size={20} />}
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-500 ${
+                          formData.features.includes(feat.id) ? 'bg-[var(--accent-color)] text-black' : 'bg-[var(--bg-primary)] text-[var(--text-muted)]'
+                        }`}>
+                          {formData.features.includes(feat.id) ? <CheckCircle2 size={24} /> : <feat.icon size={24} />}
                         </div>
-                        <span className={`font-semibold ${formData.features.includes(feat.id) ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>
+                        <span className={`font-bold text-lg ${formData.features.includes(feat.id) ? 'text-[var(--text-main)]' : 'text-[var(--text-muted)]'}`}>
                           {feat.label}
                         </span>
                       </div>
@@ -356,45 +412,55 @@ const Quote: React.FC<QuoteProps> = ({ onQuoteSubmit }) => {
                 </MotionDiv>
               )}
 
-              {/* STEP 3: DÉTAILS */}
+              {/* ÉTAPE 3: DESCRIPTION ET FICHIERS */}
               {step === 3 && (
-                <MotionDiv key="step3" custom={step} initial="enter" animate="center" exit="exit" variants={variants} transition={{ duration: 0.3 }} className="flex-grow">
-                  <h3 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">Détails du projet <span className="text-red-500">*</span></h3>
+                <MotionDiv key="step3" custom={step} initial="enter" animate="center" exit="exit" variants={variants} transition={{ duration: 0.4 }} className="flex-grow">
+                  <h3 className="text-2xl font-black mb-8 text-center text-[var(--text-main)] tracking-tight">
+                    {t('quote.details_title')} <span className="text-[var(--accent-color)]">*</span>
+                  </h3>
                   
                    {errors.description && (
-                    <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg flex items-center gap-2">
+                    <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl flex items-center gap-3">
                       <AlertCircle size={18} /> {errors.description}
                     </div>
                   )}
 
-                  <div className="space-y-6">
+                  <div className="space-y-8">
                     <div>
-                      <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">Description détaillée <span className="text-red-500">*</span></label>
+                      <label className="block text-sm font-bold uppercase tracking-widest mb-4 text-[var(--text-muted)]">
+                        {t('quote.description_label')} <span className="text-[var(--accent-color)]">*</span>
+                      </label>
                       <textarea 
                         rows={6}
-                        placeholder="Objectifs, cibles, style graphique souhaité, références de sites que vous aimez... (Min 20 caractères)"
-                        className={`w-full bg-gray-50 dark:bg-white/5 border rounded-xl px-4 py-3 focus:outline-none focus:border-accent transition-colors resize-none text-gray-900 dark:text-white placeholder:text-gray-400 ${errors.description ? 'border-red-500' : 'border-gray-200 dark:border-white/10'}`}
+                        placeholder={t('quote.description_placeholder')}
+                        className={`w-full bg-[var(--bg-surface)] border-2 rounded-2xl px-6 py-4 focus:outline-none focus:border-[var(--accent-color)] transition-all duration-500 resize-none text-[var(--text-main)] placeholder:text-[var(--text-muted)]/50 ${errors.description ? 'border-red-500/50' : 'border-[var(--border-color)]'}`}
                         value={formData.description}
                         onChange={(e) => updateForm('description', e.target.value)}
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">Pièce jointe (Optionnel)</label>
-                      <div className="border-2 border-dashed border-gray-300 dark:border-white/20 rounded-xl p-8 text-center hover:bg-gray-50 dark:hover:bg-white/5 transition-colors relative cursor-pointer group">
+                      <label className="block text-sm font-bold uppercase tracking-widest mb-4 text-[var(--text-muted)]">
+                        {t('quote.attachment_label')}
+                      </label>
+                      <div className="border-2 border-dashed border-[var(--border-color)] rounded-2xl p-10 text-center hover:border-[var(--accent-color)] hover:bg-[var(--accent-color)]/5 transition-all duration-500 relative cursor-pointer group">
                         <input type="file" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
-                        <div className="flex flex-col items-center gap-2">
+                        <div className="flex flex-col items-center gap-4">
                           {formData.file ? (
                             <>
-                              <FileText size={40} className="text-accent" />
-                              <span className="font-semibold text-gray-900 dark:text-white">{formData.file.name}</span>
-                              <span className="text-xs text-green-500">Fichier prêt à l'envoi</span>
+                              <div className="w-16 h-16 bg-[var(--accent-color)]/20 rounded-2xl flex items-center justify-center text-[var(--accent-color)]">
+                                <FileText size={32} />
+                              </div>
+                              <span className="font-bold text-[var(--text-main)]">{formData.file.name}</span>
+                              <span className="text-xs text-green-500 font-bold uppercase tracking-widest">{t('quote.attachment_ready')}</span>
                             </>
                           ) : (
                             <>
-                              <UploadCloud size={40} className="text-gray-400 group-hover:text-accent transition-colors" />
-                              <span className="text-gray-500 dark:text-gray-400">Glissez un fichier ou cliquez pour parcourir</span>
-                              <span className="text-xs text-gray-400">PDF, JPG, PNG, DOCX (Max 10Mo)</span>
+                              <div className="w-16 h-16 bg-[var(--bg-primary)] rounded-2xl flex items-center justify-center text-[var(--text-muted)] group-hover:text-[var(--accent-color)] transition-all duration-500">
+                                <UploadCloud size={32} />
+                              </div>
+                              <span className="text-[var(--text-muted)] font-medium">{t('quote.attachment_drop')}</span>
+                              <span className="text-[10px] text-[var(--text-muted)]/50 uppercase tracking-widest font-bold">PDF, JPG, PNG, DOCX (Max 10Mo)</span>
                             </>
                           )}
                         </div>
@@ -404,170 +470,245 @@ const Quote: React.FC<QuoteProps> = ({ onQuoteSubmit }) => {
                 </MotionDiv>
               )}
 
-              {/* STEP 4: BUDGET */}
+              {/* ÉTAPE 4: BUDGET ET DÉLAIS */}
               {step === 4 && (
-                <MotionDiv key="step4" custom={step} initial="enter" animate="center" exit="exit" variants={variants} transition={{ duration: 0.3 }} className="flex-grow">
-                  <h3 className="text-2xl font-bold mb-8 text-center text-gray-900 dark:text-white">Budget & Planification <span className="text-red-500">*</span></h3>
+                <MotionDiv key="step4" custom={step} initial="enter" animate="center" exit="exit" variants={variants} transition={{ duration: 0.4 }} className="flex-grow">
+                  <h3 className="text-2xl font-black mb-10 text-center text-[var(--text-main)] tracking-tight">
+                    {t('quote.budget_title')} <span className="text-[var(--accent-color)]">*</span>
+                  </h3>
                   
                    {errors.budget && (
-                    <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg flex items-center gap-2">
+                    <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl flex items-center gap-3">
                       <AlertCircle size={18} /> {errors.budget}
                     </div>
                   )}
 
-                  <div className="grid md:grid-cols-2 gap-8">
+                  <div className="grid md:grid-cols-2 gap-12">
                     <div>
-                      <label className="block text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">Estimation du Budget <span className="text-red-500">*</span></label>
-                      <div className="space-y-3">
+                      <label className="block text-sm font-bold uppercase tracking-widest mb-6 text-[var(--text-muted)]">
+                        {t('quote.budget_label')} <span className="text-[var(--accent-color)]">*</span>
+                      </label>
+                      <div className="space-y-4">
                         {BUDGET_RANGES.map((range) => (
                           <div 
                             key={range}
                             onClick={() => updateForm('budget', range)}
-                            className={`p-4 rounded-xl border cursor-pointer transition-all ${
-                              formData.budget === range 
-                                ? 'border-accent bg-accent/5 dark:bg-accent/10 text-accent font-semibold' 
-                                : 'border-gray-200 dark:border-white/10 hover:border-primary/50 dark:hover:border-white/30 text-gray-600 dark:text-gray-300'
+                            className={`flex items-center gap-4 p-5 rounded-2xl border-2 cursor-pointer transition-all duration-500 ${
+                              formData.budget === range
+                                ? 'border-[var(--accent-color)] bg-[var(--accent-color)]/5'
+                                : 'border-transparent bg-[var(--bg-surface)] hover:border-[var(--border-color)]'
                             }`}
                           >
-                            {range}
+                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${
+                              formData.budget === range ? 'border-[var(--accent-color)]' : 'border-[var(--border-color)]'
+                            }`}>
+                              {formData.budget === range && <div className="w-3 h-3 bg-[var(--accent-color)] rounded-full" />}
+                            </div>
+                            <span className={`font-bold ${formData.budget === range ? 'text-[var(--text-main)]' : 'text-[var(--text-muted)]'}`}>
+                              {range}
+                            </span>
                           </div>
                         ))}
                       </div>
                     </div>
 
+                    <div>
+                      <label className="block text-sm font-bold uppercase tracking-widest mb-6 text-[var(--text-muted)]">
+                        {t('quote.deadline_label')}
+                      </label>
+                      <div className="relative">
+                        <Edit3 className="absolute left-6 top-6 text-[var(--text-muted)]" size={20} />
+                        <input 
+                          type="text"
+                          placeholder={t('quote.deadline_placeholder')}
+                          className="w-full bg-[var(--bg-surface)] border-2 border-[var(--border-color)] rounded-2xl pl-16 pr-6 py-5 focus:outline-none focus:border-[var(--accent-color)] transition-all duration-500 text-[var(--text-main)] font-bold placeholder:text-[var(--text-muted)]/50"
+                          value={formData.deadline}
+                          onChange={(e) => updateForm('deadline', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </MotionDiv>
+              )}
+
+              {/* ÉTAPE 5: INFORMATIONS DE CONTACT */}
+              {step === 5 && (
+                <MotionDiv key="step5" custom={step} initial="enter" animate="center" exit="exit" variants={variants} transition={{ duration: 0.4 }} className="flex-grow">
+                  <h3 className="text-2xl font-black mb-2 text-center text-[var(--text-main)] tracking-tight">
+                    {t('quote.contact_title')} <span className="text-[var(--accent-color)]">*</span>
+                  </h3>
+                  <p className="text-center text-[var(--text-muted)] mb-12 font-light">{t('quote.contact_subtitle')}</p>
+                  
+                  <div className="grid md:grid-cols-2 gap-8">
                     <div className="space-y-6">
                       <div>
-                         <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">Date limite souhaitée</label>
-                         <input 
-                           type="date" 
-                           className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-accent transition-colors text-gray-900 dark:text-white"
-                           value={formData.deadline}
-                           onChange={(e) => updateForm('deadline', e.target.value)}
-                         />
-                         <p className="text-xs text-gray-500 mt-2">Laissez vide si flexible.</p>
+                        <label className="block text-xs font-bold uppercase tracking-widest mb-3 text-[var(--text-muted)]">{t('quote.contact_name')} *</label>
+                        <input 
+                          type="text"
+                          className={`w-full bg-[var(--bg-surface)] border-2 rounded-2xl px-6 py-4 focus:outline-none focus:border-[var(--accent-color)] transition-all duration-500 text-[var(--text-main)] font-bold ${errors.name ? 'border-red-500/50' : 'border-[var(--border-color)]'}`}
+                          value={formData.name}
+                          onChange={(e) => updateForm('name', e.target.value)}
+                        />
+                        {errors.name && <p className="text-red-500 text-[10px] mt-2 font-bold uppercase tracking-widest">{errors.name}</p>}
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-widest mb-3 text-[var(--text-muted)]">{t('quote.contact_company')}</label>
+                        <input 
+                          type="text"
+                          className="w-full bg-[var(--bg-surface)] border-2 border-[var(--border-color)] rounded-2xl px-6 py-4 focus:outline-none focus:border-[var(--accent-color)] transition-all duration-500 text-[var(--text-main)] font-bold"
+                          value={formData.company}
+                          onChange={(e) => updateForm('company', e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-6">
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-widest mb-3 text-[var(--text-muted)]">{t('quote.contact_email')} *</label>
+                        <input 
+                          type="email"
+                          className={`w-full bg-[var(--bg-surface)] border-2 rounded-2xl px-6 py-4 focus:outline-none focus:border-[var(--accent-color)] transition-all duration-500 text-[var(--text-main)] font-bold ${errors.email ? 'border-red-500/50' : 'border-[var(--border-color)]'}`}
+                          value={formData.email}
+                          onChange={(e) => updateForm('email', e.target.value)}
+                        />
+                        {errors.email && <p className="text-red-500 text-[10px] mt-2 font-bold uppercase tracking-widest">{errors.email}</p>}
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-widest mb-3 text-[var(--text-muted)]">{t('quote.contact_phone')} *</label>
+                        <input 
+                          type="tel"
+                          className={`w-full bg-[var(--bg-surface)] border-2 rounded-2xl px-6 py-4 focus:outline-none focus:border-[var(--accent-color)] transition-all duration-500 text-[var(--text-main)] font-bold ${errors.phone ? 'border-red-500/50' : 'border-[var(--border-color)]'}`}
+                          value={formData.phone}
+                          onChange={(e) => updateForm('phone', e.target.value)}
+                        />
+                        {errors.phone && <p className="text-red-500 text-[10px] mt-2 font-bold uppercase tracking-widest">{errors.phone}</p>}
                       </div>
                     </div>
                   </div>
-                </MotionDiv>
-              )}
 
-              {/* STEP 5: INFO */}
-              {step === 5 && (
-                <MotionDiv key="step5" custom={step} initial="enter" animate="center" exit="exit" variants={variants} transition={{ duration: 0.3 }} className="flex-grow">
-                  <h3 className="text-2xl font-bold mb-8 text-center text-gray-900 dark:text-white">Vos Coordonnées <span className="text-red-500">*</span></h3>
-                  
-                   <div className="mb-6 grid grid-cols-1 gap-2">
-                    {Object.values(errors).map((err, i) => (
-                      <div key={i} className="p-2 bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded text-sm flex items-center gap-2"><AlertCircle size={14}/> {err}</div>
-                    ))}
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="group">
-                      <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">Nom complet <span className="text-red-500">*</span></label>
-                      <input type="text" className={`w-full bg-gray-50 dark:bg-white/5 border rounded-xl px-4 py-3 focus:outline-none focus:border-accent transition-colors text-gray-900 dark:text-white ${errors.name ? 'border-red-500' : 'border-gray-200 dark:border-white/10'}`} placeholder="Votre nom" value={formData.name} onChange={(e) => updateForm('name', e.target.value)} />
+                  <div className="mt-12">
+                    <label className="block text-xs font-bold uppercase tracking-widest mb-6 text-center text-[var(--text-muted)]">{t('quote.contact_method')}</label>
+                    <div className="flex justify-center gap-6">
+                      {['email', 'phone', 'whatsapp'].map((method) => (
+                        <div 
+                          key={method}
+                          onClick={() => updateForm('contactMethod', method)}
+                          className={`px-8 py-4 rounded-2xl border-2 cursor-pointer transition-all duration-500 font-bold capitalize ${
+                            formData.contactMethod === method
+                              ? 'border-[var(--accent-color)] bg-[var(--accent-color)]/5 text-[var(--text-main)]'
+                              : 'border-transparent bg-[var(--bg-surface)] text-[var(--text-muted)] hover:border-[var(--border-color)]'
+                          }`}
+                        >
+                          {method}
+                        </div>
+                      ))}
                     </div>
-                    <div className="group">
-                      <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">Entreprise</label>
-                      <input type="text" className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-accent transition-colors text-gray-900 dark:text-white" placeholder="Nom de votre société" value={formData.company} onChange={(e) => updateForm('company', e.target.value)} />
-                    </div>
-                    <div className="group">
-                      <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">Email <span className="text-red-500">*</span></label>
-                      <input type="email" className={`w-full bg-gray-50 dark:bg-white/5 border rounded-xl px-4 py-3 focus:outline-none focus:border-accent transition-colors text-gray-900 dark:text-white ${errors.email ? 'border-red-500' : 'border-gray-200 dark:border-white/10'}`} placeholder="email@exemple.com" value={formData.email} onChange={(e) => updateForm('email', e.target.value)} />
-                    </div>
-                    <div className="group">
-                      <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">Téléphone <span className="text-red-500">*</span></label>
-                      <input type="tel" className={`w-full bg-gray-50 dark:bg-white/5 border rounded-xl px-4 py-3 focus:outline-none focus:border-accent transition-colors text-gray-900 dark:text-white ${errors.phone ? 'border-red-500' : 'border-gray-200 dark:border-white/10'}`} placeholder="+226 XX XX XX XX" value={formData.phone} onChange={(e) => updateForm('phone', e.target.value)} />
-                    </div>
-                  </div>
-                  
-                  <div className="mt-6 flex items-center gap-4 justify-center">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Préférence de contact :</span>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="radio" name="contactMethod" checked={formData.contactMethod === 'email'} onChange={() => updateForm('contactMethod', 'email')} className="accent-accent" />
-                      <span className="text-sm text-gray-900 dark:text-white">Email</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="radio" name="contactMethod" checked={formData.contactMethod === 'phone'} onChange={() => updateForm('contactMethod', 'phone')} className="accent-accent" />
-                      <span className="text-sm text-gray-900 dark:text-white">Téléphone</span>
-                    </label>
                   </div>
                 </MotionDiv>
               )}
 
-              {/* STEP 6: RÉCAPITULATIF */}
+              {/* ÉTAPE 6: RÉCAPITULATIF FINAL */}
               {step === 6 && (
-                <MotionDiv key="step6" custom={step} initial="enter" animate="center" exit="exit" variants={variants} transition={{ duration: 0.3 }} className="flex-grow">
-                   <h3 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">Récapitulatif de votre demande</h3>
-                   <div className="bg-gray-50 dark:bg-white/5 rounded-2xl p-6 border border-gray-200 dark:border-white/10 text-sm md:text-base">
-                      <div className="grid md:grid-cols-2 gap-y-6 gap-x-12">
-                         <div>
-                            <h4 className="font-bold text-primary dark:text-accent mb-2 flex items-center gap-2"><Globe size={16}/> Projet</h4>
-                            <p className="text-gray-700 dark:text-gray-300"><span className="font-semibold">Type:</span> {PROJECT_TYPES.find(t => t.id === formData.projectType)?.title}</p>
-                            <p className="text-gray-700 dark:text-gray-300"><span className="font-semibold">Nature:</span> {PROJECT_NATURE.find(n => n.id === formData.projectNature)?.title}</p>
-                            <button type="button" onClick={() => goToStep(1)} className="text-xs text-gray-500 underline mt-1 flex items-center gap-1"><Edit3 size={10}/> Modifier</button>
-                         </div>
-                         
-                         <div>
-                            <h4 className="font-bold text-primary dark:text-accent mb-2 flex items-center gap-2"><Cpu size={16}/> Options</h4>
-                            <p className="text-gray-700 dark:text-gray-300">
-                              {formData.features.length > 0 ? formData.features.map(f => FEATURES.find(feat => feat.id === f)?.label).join(', ') : "Aucune option"}
-                            </p>
-                             <button type="button" onClick={() => goToStep(2)} className="text-xs text-gray-500 underline mt-1 flex items-center gap-1"><Edit3 size={10}/> Modifier</button>
-                         </div>
-
-                         <div className="md:col-span-2">
-                             <h4 className="font-bold text-primary dark:text-accent mb-2 flex items-center gap-2"><FileText size={16}/> Description</h4>
-                             <p className="text-gray-700 dark:text-gray-300 italic">"{formData.description}"</p>
-                             {formData.file && <p className="text-xs text-green-500 mt-1">📎 {formData.file.name}</p>}
-                              <button type="button" onClick={() => goToStep(3)} className="text-xs text-gray-500 underline mt-1 flex items-center gap-1"><Edit3 size={10}/> Modifier</button>
-                         </div>
-
-                         <div>
-                            <h4 className="font-bold text-primary dark:text-accent mb-2 flex items-center gap-2"><BarChart size={16}/> Budget & Délai</h4>
-                            <p className="text-gray-700 dark:text-gray-300"><span className="font-semibold">Budget:</span> {formData.budget}</p>
-                            <p className="text-gray-700 dark:text-gray-300"><span className="font-semibold">Délai:</span> {formData.deadline || "Flexible"}</p>
-                             <button type="button" onClick={() => goToStep(4)} className="text-xs text-gray-500 underline mt-1 flex items-center gap-1"><Edit3 size={10}/> Modifier</button>
-                         </div>
-
-                         <div>
-                            <h4 className="font-bold text-primary dark:text-accent mb-2 flex items-center gap-2"><Shield size={16}/> Coordonnées</h4>
-                            <p className="text-gray-700 dark:text-gray-300">{formData.name}</p>
-                            <p className="text-gray-700 dark:text-gray-300">{formData.email} | {formData.phone}</p>
-                            <p className="text-gray-700 dark:text-gray-300">{formData.company}</p>
-                             <button type="button" onClick={() => goToStep(5)} className="text-xs text-gray-500 underline mt-1 flex items-center gap-1"><Edit3 size={10}/> Modifier</button>
-                         </div>
+                <MotionDiv key="step6" custom={step} initial="enter" animate="center" exit="exit" variants={variants} transition={{ duration: 0.4 }} className="flex-grow">
+                  <h3 className="text-2xl font-black mb-2 text-center text-[var(--text-main)] tracking-tight">
+                    {t('quote.recap_title')}
+                  </h3>
+                  <p className="text-center text-[var(--text-muted)] mb-12 font-light">{t('quote.recap_subtitle')}</p>
+                  
+                  <div className="grid md:grid-cols-2 gap-10 bg-[var(--bg-surface)] p-10 rounded-[2.5rem] border border-[var(--border-color)] shadow-inner">
+                    <div className="space-y-6">
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 bg-[var(--accent-color)]/10 rounded-xl flex items-center justify-center text-[var(--accent-color)] shrink-0">
+                          <Layout size={20} />
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-1">{t('quote.project_type')}</p>
+                          <p className="font-bold text-[var(--text-main)]">{PROJECT_TYPES.find(t => t.id === formData.projectType)?.title}</p>
+                        </div>
                       </div>
-                   </div>
-                   <p className="text-center text-xs text-gray-500 mt-6">En cliquant sur envoyer, vous acceptez que nos équipes vous contactent pour cette proposition.</p>
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 bg-[var(--accent-color)]/10 rounded-xl flex items-center justify-center text-[var(--accent-color)] shrink-0">
+                          <Zap size={20} />
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-1">{t('quote.project_nature')}</p>
+                          <p className="font-bold text-[var(--text-main)]">{PROJECT_NATURE.find(n => n.id === formData.projectNature)?.title}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 bg-[var(--accent-color)]/10 rounded-xl flex items-center justify-center text-[var(--accent-color)] shrink-0">
+                          <BarChart size={20} />
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-1">{t('quote.budget_label')}</p>
+                          <p className="font-bold text-[var(--text-main)]">{formData.budget}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-6">
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 bg-[var(--accent-color)]/10 rounded-xl flex items-center justify-center text-[var(--accent-color)] shrink-0">
+                          <FileText size={20} />
+                        </div>
+                        <div className="flex-grow">
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-1">{t('quote.description_label')}</p>
+                          <p className="text-sm text-[var(--text-main)] line-clamp-3 leading-relaxed font-medium italic">"{formData.description}"</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 bg-[var(--accent-color)]/10 rounded-xl flex items-center justify-center text-[var(--accent-color)] shrink-0">
+                          <Send size={20} />
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-1">Contact</p>
+                          <p className="font-bold text-[var(--text-main)]">{formData.name}</p>
+                          <p className="text-xs text-[var(--text-muted)] font-medium">{formData.email}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </MotionDiv>
               )}
 
             </AnimatePresence>
 
-            {/* Navigation Buttons */}
-            <div className="flex justify-between mt-10 pt-6 border-t border-gray-200 dark:border-white/10 shrink-0">
+            {/* Boutons de navigation du formulaire */}
+            <div className="flex items-center justify-between mt-12 pt-8 border-t border-[var(--border-color)]">
               {step > 1 ? (
-                <button type="button" onClick={handlePrev} className="px-6 py-3 rounded-full border border-gray-300 dark:border-white/20 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors font-semibold flex items-center gap-2 text-gray-700 dark:text-white">
-                  <ArrowLeft size={18} /> <span className="hidden sm:inline">Précédent</span>
+                <button 
+                  type="button" 
+                  onClick={handlePrev}
+                  className="flex items-center gap-3 px-8 py-4 bg-transparent border-2 border-[var(--border-color)] text-[var(--text-muted)] rounded-2xl font-bold hover:bg-[var(--bg-surface)] hover:text-[var(--text-main)] transition-all duration-500"
+                >
+                  <ArrowLeft size={20} /> {t('quote.btn_prev')}
                 </button>
-              ) : (<div></div>)}
+              ) : <div></div>}
 
               {step < 6 ? (
                 <button 
                   type="button" 
                   onClick={handleNext}
-                  className="px-8 py-3 bg-primary text-white hover:bg-primary-light shadow-lg rounded-full font-bold flex items-center gap-2 transition-all transform hover:translate-x-1"
+                  className="btn-architect flex items-center gap-3"
                 >
-                  {step === 5 ? 'Vérifier' : 'Suivant'} <ArrowRight size={18} />
+                  {t('quote.btn_next')} <ArrowRight size={20} />
                 </button>
               ) : (
                 <button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="px-8 py-3 bg-accent text-dark font-bold rounded-full hover:bg-white transition-all shadow-lg hover:shadow-accent/50 flex items-center gap-2 transform hover:-translate-y-1"
+                  className="btn-architect flex items-center gap-3 group"
                 >
-                  {isSubmitting ? 'Envoi...' : 'Confirmer & Envoyer'} <Send size={18} />
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                      {t('quote.btn_submitting')}
+                    </>
+                  ) : (
+                    <>
+                      {t('quote.btn_submit')} <Send size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                    </>
+                  )}
                 </button>
               )}
             </div>

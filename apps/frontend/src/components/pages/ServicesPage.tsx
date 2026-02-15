@@ -2,16 +2,30 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Layers, Check, ArrowRight, HelpCircle, ChevronDown, Plus, Minus, Calculator, Palette } from 'lucide-react';
+import { 
+  Layers, Check, ArrowRight, HelpCircle, ChevronDown, Plus, Minus, Calculator, 
+  Palette, Code, Smartphone, Video, ShoppingCart, BarChart 
+} from 'lucide-react';
 // @ts-ignore
 import Link from 'next/link';
 import Image from 'next/image';
 import { useLanguage } from '../../context/LanguageContext';
 import { PRICING_PLANS } from '../../constants';
+import { api } from '../../lib/api';
 import ProjectCalculator from '../ui/ProjectCalculator';
 import SectionDivider from '../ui/SectionDivider';
 import Breadcrumbs from '../ui/Breadcrumbs';
 import NeuralBackground from '../ui/NeuralBackground';
+
+const ICON_MAP: any = {
+  Palette,
+  Code,
+  Smartphone,
+  Video,
+  ShoppingCart,
+  BarChart,
+  Layers
+};
 
 const StickyServiceSection = ({ services }: { services: any[] }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -20,7 +34,7 @@ const StickyServiceSection = ({ services }: { services: any[] }) => {
   useEffect(() => {
     const handleScroll = () => {
       if (!containerRef.current) return;
-      // On desktop only
+      // Uniquement sur desktop
       if (window.innerWidth >= 1024) {
         const sections = containerRef.current.querySelectorAll('.service-block');
         sections.forEach((sec: any, index) => {
@@ -36,10 +50,10 @@ const StickyServiceSection = ({ services }: { services: any[] }) => {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative w-full bg-[#05070a] text-white">
+    <div ref={containerRef} className="relative w-full bg-[var(--bg-primary)] text-[var(--text-main)]">
       <div className="container mx-auto px-6 flex flex-col lg:flex-row gap-12">
         
-        {/* Left Side: Sticky Text Content (DESKTOP ONLY) */}
+        {/* Côté gauche : Contenu textuel collant (DESKTOP UNIQUEMENT) */}
         <div className="lg:w-1/2 hidden lg:flex flex-col justify-center h-screen sticky top-0 py-20 pl-4 pointer-events-none">
            <div className="relative h-full flex flex-col justify-center pointer-events-auto">
               {services.map((service, index) => (
@@ -54,72 +68,78 @@ const StickyServiceSection = ({ services }: { services: any[] }) => {
                     transition={{ duration: 0.5 }}
                     className="absolute left-0 w-full"
                  >
-                    <span className="text-9xl font-black text-white/5 absolute -top-24 -left-10 -z-10 select-none font-outline-2">{`0${index + 1}`}</span>
-                    <div className={`inline-flex p-4 rounded-2xl text-white mb-6 bg-gradient-to-br ${service.gradient} shadow-[0_0_30px_rgba(255,255,255,0.2)]`}>
-                      <service.icon size={32} />
+                    <span className="text-9xl font-black text-[var(--text-main)] opacity-[0.03] absolute -top-24 -left-10 -z-10 select-none">{`0${index + 1}`}</span>
+                    <div className={`inline-flex p-4 rounded-2xl text-white mb-6 bg-gradient-to-br ${service.gradient} shadow-xl`}>
+                      {(() => {
+                        const Icon = ICON_MAP[service.icon] || Layers;
+                        return <Icon size={32} />;
+                      })()}
                     </div>
-                    <h2 className="text-5xl md:text-6xl font-black text-white mb-6 leading-tight">{service.title}</h2>
-                    <p className="text-xl text-gray-300 mb-8 leading-relaxed max-w-xl">{service.description}</p>
-                    <ul className="space-y-4 mb-10">
+                    <h2 className="text-5xl md:text-7xl font-black text-[var(--text-main)] mb-8 leading-tight tracking-tighter">{service.title}</h2>
+                    <p className="text-xl text-[var(--text-muted)] mb-10 leading-relaxed max-w-xl font-light">{service.description}</p>
+                    <ul className="space-y-5 mb-12">
                        {(service.features || []).slice(0, 4).map((feat: string, i: number) => (
-                          <li key={i} className="flex items-center gap-3">
-                             <div className="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center shrink-0 border border-primary/30"><Check size={14} strokeWidth={3} /></div>
-                             <span className="font-medium text-gray-200">{feat}</span>
+                          <li key={i} className="flex items-center gap-4">
+                             <div className="w-6 h-6 rounded-full bg-[var(--accent-color)]/10 text-[var(--accent-color)] flex items-center justify-center shrink-0 border border-[var(--accent-color)]/20"><Check size={14} strokeWidth={3} /></div>
+                             <span className="font-medium text-[var(--text-main)]/80">{feat}</span>
                           </li>
                        ))}
                     </ul>
-                    <div className="flex items-center gap-6">
-                       <Link href="/devis" className="px-8 py-4 bg-white text-black font-bold rounded-full hover:bg-accent hover:text-black transition-all flex items-center gap-2 shadow-lg hover:shadow-accent/50 transform hover:scale-105">
-                         Commander <ArrowRight size={18} />
+                    <div className="flex items-center gap-8">
+                       <Link href="/devis" className="btn-architect px-10 py-5 flex items-center gap-3">
+                         Commander <ArrowRight size={20} />
                        </Link>
-                       <span className="text-xl font-bold text-gray-400">{service.pricing}</span>
+                       <span className="text-2xl font-black text-[var(--accent-color)]">{service.pricing}</span>
                     </div>
                  </motion.div>
               ))}
            </div>
         </div>
 
-        {/* Right Side: Scrolling Images (AND Text on Mobile) */}
-        <div className="lg:w-1/2 w-full flex flex-col gap-24 py-12 lg:py-[15vh]">
+        {/* Côté droit : Images défilantes (et texte sur mobile) */}
+        <div className="lg:w-1/2 w-full flex flex-col gap-32 py-12 lg:py-[15vh]">
            {services.map((service, index) => (
               <div key={service.id} className="service-block min-h-auto lg:min-h-[60vh] flex flex-col items-center justify-center p-0 lg:p-6">
                  
-                 {/* Image Card */}
+                 {/* Carte Image */}
                  <motion.div 
                     initial={{ opacity: 0, y: 50 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-10%" }}
-                    transition={{ duration: 0.6 }}
-                    className="relative w-full aspect-[4/5] md:aspect-square lg:aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-2xl group border border-white/10 bg-white/5 backdrop-blur-xl hover:border-primary/50 transition-colors"
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    className="relative w-full aspect-[4/5] md:aspect-square lg:aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl group border border-[var(--border-color)] bg-[var(--bg-surface)] glass hover:border-[var(--accent-color)]/50 transition-all duration-500"
                  >
-                    <div className="absolute inset-0 z-10 bg-gradient-to-b from-transparent via-transparent to-black/90"></div>
+                    <div className="absolute inset-0 z-10 bg-gradient-to-b from-transparent via-transparent to-[var(--bg-primary)]/80"></div>
                     <Image 
                       src={service.image} 
                       alt={service.title} 
                       fill
                       sizes="(max-width: 1024px) 100vw, 50vw"
-                      className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100"
+                      className="object-cover transition-transform duration-1000 group-hover:scale-110 opacity-90 group-hover:opacity-100"
                       loading="lazy"
                     />
                     
-                    {/* MOBILE CONTENT OVERLAY (Visible only on lg:hidden) */}
-                    <div className="absolute bottom-0 left-0 w-full p-8 z-20 lg:hidden">
-                       <div className={`inline-flex p-3 rounded-xl text-white mb-4 bg-gradient-to-br ${service.gradient} shadow-lg`}>
-                          <service.icon size={24} />
-                       </div>
-                       <h3 className="text-3xl font-black text-white mb-3 leading-tight">{service.title}</h3>
-                       <p className="text-gray-300 text-sm line-clamp-3 mb-6 leading-relaxed">{service.description}</p>
-                       <ul className="space-y-2 mb-6">
+                    {/* CONTENU MOBILE (Visible uniquement sur lg:hidden) */}
+                    <div className="absolute bottom-0 left-0 w-full p-10 z-20 lg:hidden">
+                          <div className={`inline-flex p-4 rounded-xl text-white mb-6 bg-gradient-to-br ${service.gradient} shadow-lg`}>
+                            {(() => {
+                              const Icon = ICON_MAP[service.icon] || Layers;
+                              return <Icon size={24} />;
+                            })()}
+                          </div>
+                          <h3 className="text-4xl font-black text-[var(--text-main)] mb-4 leading-tight tracking-tighter">{service.title}</h3>
+                       <p className="text-[var(--text-muted)] text-base line-clamp-3 mb-8 leading-relaxed font-light">{service.description}</p>
+                       <ul className="space-y-3 mb-8">
                           {(service.features || []).slice(0, 3).map((feat: string, i: number) => (
-                             <li key={i} className="flex items-center gap-2 text-xs text-gray-400">
-                                <Check size={12} className="text-primary"/> {feat}
+                             <li key={i} className="flex items-center gap-3 text-sm text-[var(--text-main)]/70">
+                                <Check size={14} className="text-[var(--accent-color)]"/> {feat}
                              </li>
                           ))}
                        </ul>
-                       <div className="flex items-center justify-between">
-                          <span className="text-sm font-bold text-accent">{service.pricing}</span>
-                          <Link href="/devis" className="px-6 py-3 bg-white text-black rounded-full font-bold text-sm hover:bg-accent transition-colors flex items-center gap-2">
-                             Devis <ArrowRight size={16} />
+                       <div className="flex items-center justify-between gap-4">
+                          <span className="text-xl font-black text-[var(--accent-color)]">{service.pricing}</span>
+                          <Link href="/devis" className="btn-architect px-8 py-4 text-sm flex items-center gap-2">
+                             Devis <ArrowRight size={18} />
                           </Link>
                        </div>
                     </div>
@@ -135,54 +155,59 @@ const StickyServiceSection = ({ services }: { services: any[] }) => {
 
 const FAQSection = ({ faqs }: { faqs: any[] }) => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const { t } = useLanguage();
 
   const toggle = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
   return (
-    <section className="py-24 bg-[#0f172a] relative overflow-hidden">
-       <div className="absolute left-0 top-1/2 -translate-y-1/2 w-96 h-96 bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
-       <div className="absolute right-0 bottom-0 w-64 h-64 bg-accent/5 rounded-full blur-[80px] pointer-events-none"></div>
+    <section className="py-32 bg-[var(--bg-primary)] relative overflow-hidden">
+       {/* Lueurs ambiantes */}
+       <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[var(--accent-color)] opacity-[0.03] blur-[120px] rounded-full pointer-events-none"></div>
+       <div className="absolute right-0 bottom-0 w-[400px] h-[400px] bg-[var(--accent-color)] opacity-[0.02] blur-[100px] rounded-full pointer-events-none"></div>
 
        <div className="container mx-auto px-6 max-w-4xl relative z-10">
-          <div className="text-center mb-16">
-             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 mb-6 backdrop-blur-md">
-                <HelpCircle size={16} className="text-accent" />
-                <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Support & Aide</span>
+          <div className="text-center mb-20">
+             <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full border border-[var(--border-color)] bg-[var(--bg-surface)] glass mb-8">
+                <HelpCircle size={18} className="text-[var(--accent-color)]" />
+                <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest">{t('services.support_tag') || 'Support & Aide'}</span>
              </div>
-             <h2 className="text-4xl md:text-5xl font-black text-white mb-4">Questions Fréquentes</h2>
-             <p className="text-gray-400 text-lg">Tout ce que vous devez savoir avant de démarrer.</p>
+             <h2 className="text-5xl md:text-6xl font-black text-[var(--text-main)] mb-6 tracking-tighter">{t('services.faq_title') || 'Questions Fréquentes'}</h2>
+             <p className="text-[var(--text-muted)] text-xl font-light">{t('services.faq_sub') || 'Tout ce que vous devez savoir avant de démarrer.'}</p>
           </div>
 
-          <div className="grid gap-4">
+          <div className="grid gap-6">
              {faqs.map((faq: any, index: number) => (
                 <motion.div 
                    key={index} 
                    initial={false}
-                   animate={{ backgroundColor: openIndex === index ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.02)' }}
-                   className={`border ${openIndex === index ? 'border-primary/50' : 'border-white/5'} rounded-2xl overflow-hidden transition-all duration-300`}
+                   animate={{ 
+                     backgroundColor: openIndex === index ? 'var(--bg-surface)' : 'transparent',
+                     borderColor: openIndex === index ? 'var(--accent-color)' : 'var(--border-color)'
+                   }}
+                   className={`border rounded-[2rem] overflow-hidden transition-all duration-500 glass shadow-sm`}
                 >
                    <button 
                       onClick={() => toggle(index)} 
-                      className="w-full flex justify-between items-center p-6 text-left"
+                      className="w-full flex justify-between items-center p-8 text-left group"
                    >
-                      <span className={`font-bold text-lg transition-colors ${openIndex === index ? 'text-primary' : 'text-white'}`}>
+                      <span className={`font-bold text-xl md:text-2xl transition-colors tracking-tight ${openIndex === index ? 'text-[var(--accent-color)]' : 'text-[var(--text-main)] group-hover:text-[var(--accent-color)]'}`}>
                          {faq.question}
                       </span>
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center border transition-all ${openIndex === index ? 'bg-primary text-white border-primary rotate-180' : 'bg-transparent text-gray-400 border-white/10'}`}>
-                         {openIndex === index ? <Minus size={16} /> : <Plus size={16} />}
+                      <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border transition-all duration-500 ${openIndex === index ? 'bg-[var(--accent-color)] text-black border-[var(--accent-color)] rotate-180 shadow-lg' : 'bg-[var(--bg-surface)] text-[var(--text-muted)] border-[var(--border-color)]'}`}>
+                         {openIndex === index ? <Minus size={20} /> : <Plus size={20} />}
                       </div>
                    </button>
                    <AnimatePresence>
                       {openIndex === index && (
                          <motion.div 
                             initial={{ height: 0, opacity: 0 }} 
-                            animate={{ height: 'auto', opacity: 1 }} 
+                            animate={{ height: 'auto', opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.3 }}
+                            transition={{ duration: 0.4, ease: "easeInOut" }}
                          >
-                            <div className="px-6 pb-6 text-gray-400 leading-relaxed border-t border-white/5 pt-4">
+                            <div className="px-8 pb-8 text-lg text-[var(--text-muted)] leading-relaxed font-light border-t border-[var(--border-color)]/50 pt-6">
                                {faq.answer}
                             </div>
                          </motion.div>
@@ -193,15 +218,38 @@ const FAQSection = ({ faqs }: { faqs: any[] }) => {
           </div>
        </div>
     </section>
-  );
-};
+  );};
 
 const ServicesPage: React.FC = () => {
   const { t, getData } = useLanguage();
-  const services = getData('services');
-  const faqs = getData('faqs');
+  const [services, setServices] = useState<any[]>([]);
+  const [faqs, setFaqs] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => { window.scrollTo(0, 0); }, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        const [servicesData, faqsData] = await Promise.all([
+          api.getServices(),
+          api.getFAQs()
+        ]);
+        setServices(servicesData);
+        setFaqs(faqsData);
+      } catch (error) {
+        console.error('Error loading services page data:', error);
+        // Fallback to mock data if API fails
+        setServices(getData('services'));
+        setFaqs(getData('faqs'));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, [getData]);
 
   const handleScrollToCalculator = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -210,6 +258,14 @@ const ServicesPage: React.FC = () => {
       element.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="bg-[#02040a] min-h-screen flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#02040a] min-h-screen text-white">

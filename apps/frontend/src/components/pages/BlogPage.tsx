@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 // @ts-ignore
 import Link from 'next/link';
+import Image from 'next/image';
 import { 
   Search, ArrowRight, Calendar, User, Clock, Mic, 
   PlayCircle, TrendingUp, Headphones, Bookmark, Hash 
@@ -11,33 +12,137 @@ import {
 import { BlogPost } from '../../types';
 import Breadcrumbs from '../ui/Breadcrumbs';
 import { useLanguage } from '../../context/LanguageContext';
+import { api } from '../../lib/api';
 import NeuralBackground from '../ui/NeuralBackground';
-import Section from '../ui/Section';
 
-const TRENDING_TAGS = [
-  "Intelligence Artificielle", "Web3 Design", "No-Code Revolution", 
+/**
+ * Traductions locales pour la page Blog
+ */
+const TRANSLATIONS = {
+  fr: {
+    editorial: "MGS Éditorial",
+    title: {
+      digital: "DIGITAL",
+      insights: "INSIGHTS"
+    },
+    tabs: {
+      articles: "Articles",
+      podcasts: "Podcasts"
+    },
+    categories: {
+      all: "Tous",
+      tech: "Tech",
+      design: "Design",
+      business: "Business",
+      news: "Actualités"
+    },
+    podcast: {
+      title: "MGS",
+      subtitle: "Cast",
+      desc: "Conversations brutes sur la tech, le design et le futur.",
+      listen: "Écouter",
+      episode: "Épisode"
+    },
+    newsletter: {
+      title: "Restez à l'",
+      titleAccent: "Avant-Garde",
+      desc: "Recevez chaque semaine notre sélection d'articles, de ressources et d'inspirations. Pas de spam, juste de la valeur pure.",
+      placeholder: "votre@email.com",
+      button: "S'abonner"
+    },
+    readTime: "de lecture",
+    guest: "Invité"
+  },
+  en: {
+    editorial: "MGS Editorial",
+    title: {
+      digital: "DIGITAL",
+      insights: "INSIGHTS"
+    },
+    tabs: {
+      articles: "Articles",
+      podcasts: "Podcasts"
+    },
+    categories: {
+      all: "All",
+      tech: "Tech",
+      design: "Design",
+      business: "Business",
+      news: "News"
+    },
+    podcast: {
+      title: "MGS",
+      subtitle: "Cast",
+      desc: "Raw conversations about tech, design and the future.",
+      listen: "Listen",
+      episode: "Episode"
+    },
+    newsletter: {
+      title: "Stay at the",
+      titleAccent: "Forefront",
+      desc: "Receive our weekly selection of articles, resources and inspiration. No spam, just pure value.",
+      placeholder: "your@email.com",
+      button: "Subscribe"
+    },
+    readTime: "read",
+    guest: "Guest"
+  }
+};
+
+const TRENDING_TAGS = (lang: string) => lang === 'fr' ? [
+  "Intelligence Artificielle", "Web3 Design", "Révolution No-Code", 
+  "SEO 2025", "Green IT", "Cybersécurité", "React 19", "Psychologie UX"
+] : [
+  "Artificial Intelligence", "Web3 Design", "No-Code Revolution", 
   "SEO 2025", "Green IT", "Cybersecurity", "React 19", "UX Psychology"
 ];
 
-const PODCAST_EPISODES = [
+const PODCAST_EPISODES = (lang: string) => lang === 'fr' ? [
   { id: 1, title: "L'avenir du Web est-il 100% IA ?", duration: "24 min", guest: "Dr. Sarah Connor" },
   { id: 2, title: "Design Systems : Arrêtez de tout refaire", duration: "18 min", guest: "Tom Designer" },
   { id: 3, title: "Le No-Code va-t-il tuer les dévs ?", duration: "32 min", guest: "Alex NoCoder" },
+] : [
+  { id: 1, title: "Is the Future of Web 100% AI?", duration: "24 min", guest: "Dr. Sarah Connor" },
+  { id: 2, title: "Design Systems: Stop Redoing Everything", duration: "18 min", guest: "Tom Designer" },
+  { id: 3, title: "Will No-Code Kill Developers?", duration: "32 min", guest: "Alex NoCoder" },
 ];
 
 const BlogPage: React.FC = () => {
-  const { t, getData } = useLanguage();
+  const { language, t, getData } = useLanguage();
+  const currentT = TRANSLATIONS[language];
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [filter, setFilter] = useState('All');
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState<'articles' | 'podcasts'>('articles');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    setPosts(getData('blog'));
+    
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        const data = await api.getBlogPosts();
+        setPosts(data);
+      } catch (error) {
+        console.error('Error loading blog posts:', error);
+        // Repli vers les données fictives
+        setPosts(getData('blog'));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
   }, [getData]);
 
-  const categories = ['All', 'Tech', 'Design', 'Business', 'News'];
+  const categories = [
+    { id: 'All', label: currentT.categories.all },
+    { id: 'Tech', label: currentT.categories.tech },
+    { id: 'Design', label: currentT.categories.design },
+    { id: 'Business', label: currentT.categories.business },
+    { id: 'News', label: currentT.categories.news }
+  ];
 
   const filteredPosts = posts.filter(post => {
     const matchesCategory = filter === 'All' || post.category === filter;
@@ -50,15 +155,23 @@ const BlogPage: React.FC = () => {
   
   const MotionDiv = motion.div as any;
 
+  if (isLoading) {
+    return (
+      <div className="bg-[var(--bg-primary)] min-h-screen flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-[var(--accent-color)] border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-slate-50 dark:bg-dark min-h-screen">
+    <div className="bg-[var(--bg-primary)] text-[var(--text-main)] min-h-screen">
       
-      {/* 1. HERO SECTION CINEMATIC */}
-      <section className="relative pt-40 pb-20 overflow-hidden bg-[#02040a]">
+      {/* 1. SECTION HERO CINÉMATIQUE */}
+      <section className="relative pt-40 pb-20 overflow-hidden bg-[var(--bg-primary)]">
          <div className="absolute inset-0 z-0">
             <NeuralBackground />
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay pointer-events-none"></div>
-            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-purple-900/20 rounded-full blur-[150px] pointer-events-none"></div>
+            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[var(--accent-color)]/10 rounded-full blur-[150px] pointer-events-none"></div>
          </div>
 
          <div className="container mx-auto px-6 relative z-10">
@@ -72,21 +185,23 @@ const BlogPage: React.FC = () => {
                  className="max-w-3xl"
                >
                   <div className="flex items-center gap-3 mb-6">
-                     <span className="px-3 py-1 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-400 text-xs font-bold uppercase tracking-widest animate-pulse">
-                        MGS Editorial
+                     <span className="px-3 py-1 rounded-full border border-[var(--accent-color)]/30 bg-[var(--accent-color)]/10 text-[var(--accent-color)] text-xs font-bold uppercase tracking-widest animate-pulse">
+                        {currentT.editorial}
                      </span>
-                     <span className="text-gray-500 text-sm font-mono">v.2025.1</span>
+                     <span className="text-[var(--text-secondary)] text-sm font-mono opacity-50">v.2026.1</span>
                   </div>
-                  <h1 className="text-5xl md:text-8xl font-black text-white tracking-tighter leading-[0.9] mb-6">
-                     DIGITAL <br/>
-                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-white to-blue-400">INSIGHTS</span>
+                  <h1 className="text-5xl md:text-8xl font-black text-[var(--text-main)] tracking-tighter leading-[0.9] mb-6">
+                     {currentT.title.digital} <br/>
+                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--accent-color)] via-[var(--text-main)] to-[var(--text-secondary)]">
+                        {currentT.title.insights}
+                     </span>
                   </h1>
-                  <p className="text-xl text-gray-400 max-w-xl leading-relaxed">
+                  <p className="text-xl text-[var(--text-secondary)] max-w-xl leading-relaxed">
                      {t('blog.subtitle')}
                   </p>
                </motion.div>
 
-               {/* Search & Tabs */}
+               {/* Recherche & Onglets */}
                <motion.div 
                  initial={{ opacity: 0, y: 50 }}
                  animate={{ opacity: 1, y: 0 }}
@@ -94,31 +209,31 @@ const BlogPage: React.FC = () => {
                  className="w-full lg:w-auto flex flex-col gap-6"
                >
                   <div className="relative group">
-                     <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full opacity-20 group-hover:opacity-100 blur transition duration-500"></div>
-                     <div className="relative flex items-center bg-[#0a0f1c] rounded-full p-2 border border-white/10">
-                        <Search className="ml-4 text-gray-400" size={20} />
+                     <div className="absolute -inset-1 bg-gradient-to-r from-[var(--accent-color)] to-[var(--text-main)] rounded-full opacity-20 group-hover:opacity-100 blur transition duration-500"></div>
+                     <div className="relative flex items-center bg-[var(--bg-surface)]/80 backdrop-blur-xl rounded-full p-2 border border-[var(--border-color)]">
+                        <Search className="ml-4 text-[var(--text-secondary)]" size={20} />
                         <input 
                            type="text" 
                            placeholder={t('blog.search_placeholder')} 
-                           className="w-full md:w-80 bg-transparent border-none outline-none text-white px-4 py-2"
+                           className="w-full md:w-80 bg-transparent border-none outline-none text-[var(--text-main)] px-4 py-2"
                            value={search} 
                            onChange={(e) => setSearch(e.target.value)} 
                         />
                      </div>
                   </div>
 
-                  <div className="flex bg-white/5 p-1 rounded-xl backdrop-blur-md border border-white/10">
+                  <div className="flex bg-[var(--bg-surface)]/50 p-1 rounded-xl backdrop-blur-md border border-[var(--border-color)]">
                      <button 
                         onClick={() => setActiveTab('articles')}
-                        className={`flex-1 flex items-center justify-center gap-2 py-3 px-6 rounded-lg text-sm font-bold transition-all ${activeTab === 'articles' ? 'bg-white text-black shadow-lg' : 'text-gray-400 hover:text-white'}`}
+                        className={`flex-1 flex items-center justify-center gap-2 py-3 px-6 rounded-lg text-sm font-bold transition-all ${activeTab === 'articles' ? 'bg-[var(--text-main)] text-[var(--bg-primary)] shadow-lg' : 'text-[var(--text-secondary)] hover:text-[var(--text-main)]'}`}
                      >
-                        <TrendingUp size={16} /> Articles
+                        <TrendingUp size={16} /> {currentT.tabs.articles}
                      </button>
                      <button 
                         onClick={() => setActiveTab('podcasts')}
-                        className={`flex-1 flex items-center justify-center gap-2 py-3 px-6 rounded-lg text-sm font-bold transition-all ${activeTab === 'podcasts' ? 'bg-white text-black shadow-lg' : 'text-gray-400 hover:text-white'}`}
+                        className={`flex-1 flex items-center justify-center gap-2 py-3 px-6 rounded-lg text-sm font-bold transition-all ${activeTab === 'podcasts' ? 'bg-[var(--text-main)] text-[var(--bg-primary)] shadow-lg' : 'text-[var(--text-secondary)] hover:text-[var(--text-main)]'}`}
                      >
-                        <Mic size={16} /> Podcasts
+                        <Mic size={16} /> {currentT.tabs.podcasts}
                      </button>
                   </div>
                </motion.div>
@@ -126,23 +241,23 @@ const BlogPage: React.FC = () => {
          </div>
       </section>
 
-      {/* 2. TRENDING MARQUEE */}
-      <div className="bg-[#0f172a] border-y border-white/5 py-4 overflow-hidden relative">
+      {/* 2. DÉFILÉ DES TENDANCES */}
+      <div className="bg-[var(--bg-surface)] border-y border-[var(--border-color)] py-4 overflow-hidden relative">
          <div className="flex gap-8 w-max animate-scroll">
-            {[...TRENDING_TAGS, ...TRENDING_TAGS, ...TRENDING_TAGS].map((tag, i) => (
-               <div key={i} className="flex items-center gap-2 text-gray-500 font-mono text-sm uppercase tracking-wider">
-                  <Hash size={14} className="text-purple-500" /> {tag}
+            {[...TRENDING_TAGS(language), ...TRENDING_TAGS(language), ...TRENDING_TAGS(language)].map((tag, i) => (
+               <div key={i} className="flex items-center gap-2 text-[var(--text-secondary)] font-mono text-sm uppercase tracking-wider">
+                  <Hash size={14} className="text-[var(--accent-color)]" /> {tag}
                </div>
             ))}
          </div>
-         <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#0f172a] to-transparent pointer-events-none"></div>
-         <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#0f172a] to-transparent pointer-events-none"></div>
+         <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[var(--bg-surface)] to-transparent pointer-events-none"></div>
+         <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[var(--bg-surface)] to-transparent pointer-events-none"></div>
       </div>
 
       <div className="container mx-auto px-6 py-20 relative z-10">
          
          <AnimatePresence mode="wait">
-            {/* VIEW: ARTICLES */}
+            {/* VUE: ARTICLES */}
             {activeTab === 'articles' && (
                <motion.div 
                   key="articles"
@@ -150,52 +265,57 @@ const BlogPage: React.FC = () => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                >
-                  {/* Category Filter */}
+                  {/* Filtre par catégorie */}
                   <div className="flex flex-wrap gap-2 mb-12">
                      {categories.map(cat => (
                         <button 
-                           key={cat} 
-                           onClick={() => setFilter(cat)} 
-                           className={`px-6 py-2 rounded-full font-bold text-sm border transition-all ${filter === cat ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-transparent' : 'bg-transparent text-gray-500 border-gray-200 dark:border-white/10 hover:border-purple-500'}`}
+                           key={cat.id} 
+                           onClick={() => setFilter(cat.id)} 
+                           className={`px-6 py-2 rounded-full font-bold text-sm border transition-all ${filter === cat.id ? 'bg-[var(--text-main)] text-[var(--bg-primary)] border-transparent' : 'bg-transparent text-[var(--text-secondary)] border-[var(--border-color)] hover:border-[var(--accent-color)]'}`}
                         >
-                           {cat}
+                           {cat.label}
                         </button>
                      ))}
                   </div>
 
-                  {/* Featured Post (Magazine Layout) */}
+                  {/* Article à la une (Mise en page Magazine) */}
                   {featuredPost && !search && filter === 'All' && (
-                     <div className="mb-24 group cursor-pointer relative rounded-[2.5rem] overflow-hidden bg-[#02040a] border border-white/10 shadow-2xl">
+                     <div className="mb-24 group cursor-pointer relative rounded-[2.5rem] overflow-hidden bg-[var(--bg-surface)] border border-[var(--border-color)] shadow-2xl glass">
                         <Link href={`/blog/${featuredPost.id}`} className="grid lg:grid-cols-2">
                            <div className="relative h-[400px] lg:h-[600px] overflow-hidden">
-                              <img src={featuredPost.image} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt={featuredPost.title} />
-                              <div className="absolute inset-0 bg-purple-900/20 mix-blend-overlay"></div>
+                              <Image 
+                                src={featuredPost.image} 
+                                alt={featuredPost.title}
+                                fill
+                                className="object-cover transition-transform duration-1000 group-hover:scale-105" 
+                              />
+                              <div className="absolute inset-0 bg-[var(--accent-color)]/20 mix-blend-overlay"></div>
                            </div>
                            <div className="p-8 lg:p-16 flex flex-col justify-center relative">
-                              <div className="absolute top-0 right-0 p-16 opacity-10 pointer-events-none">
-                                 <TrendingUp size={200} className="text-white"/>
+                              <div className="absolute top-0 right-0 p-16 opacity-5 pointer-events-none">
+                                 <TrendingUp size={200} className="text-[var(--text-main)]"/>
                               </div>
                               <div className="flex gap-4 mb-6">
-                                 <span className="bg-purple-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-purple-500/30">{featuredPost.category}</span>
-                                 <span className="flex items-center gap-2 text-gray-400 text-xs font-medium"><Clock size={14}/> {featuredPost.readTime} de lecture</span>
+                                 <span className="bg-[var(--accent-color)] text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-[var(--accent-color)]/30">{featuredPost.category}</span>
+                                 <span className="flex items-center gap-2 text-[var(--text-secondary)] text-xs font-medium"><Clock size={14}/> {featuredPost.readTime} {currentT.readTime}</span>
                               </div>
-                              <h2 className="text-4xl lg:text-6xl font-black text-white mb-6 leading-[1.1] group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-purple-400 transition-all">
+                              <h2 className="text-4xl lg:text-6xl font-black text-[var(--text-main)] mb-6 leading-[1.1] group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-[var(--text-main)] group-hover:to-[var(--accent-color)] transition-all">
                                  {featuredPost.title}
                               </h2>
-                              <p className="text-gray-400 text-lg mb-10 leading-relaxed border-l-2 border-purple-500 pl-6">
+                              <p className="text-[var(--text-secondary)] text-lg mb-10 leading-relaxed border-l-2 border-[var(--accent-color)] pl-6">
                                  {featuredPost.excerpt}
                               </p>
                               <div className="flex items-center gap-4">
                                  <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                                    <div className="w-12 h-12 bg-[var(--accent-color)]/10 rounded-full flex items-center justify-center text-[var(--accent-color)] font-bold text-lg border border-[var(--accent-color)]/20">
                                        {featuredPost.author.charAt(0)}
                                     </div>
                                     <div className="text-sm">
-                                       <span className="block text-white font-bold">{featuredPost.author}</span>
-                                       <span className="text-gray-500">{featuredPost.date}</span>
+                                       <span className="block text-[var(--text-main)] font-bold">{featuredPost.author}</span>
+                                       <span className="text-[var(--text-secondary)] opacity-60">{featuredPost.date}</span>
                                     </div>
                                  </div>
-                                 <div className="ml-auto w-14 h-14 rounded-full border border-white/20 flex items-center justify-center text-white group-hover:bg-white group-hover:text-black transition-all">
+                                 <div className="ml-auto w-14 h-14 rounded-full border border-[var(--border-color)] flex items-center justify-center text-[var(--text-main)] group-hover:bg-[var(--text-main)] group-hover:text-[var(--bg-primary)] transition-all">
                                     <ArrowRight size={24} className="-rotate-45 group-hover:rotate-0 transition-transform duration-300"/>
                                  </div>
                               </div>
@@ -204,7 +324,7 @@ const BlogPage: React.FC = () => {
                      </div>
                   )}
 
-                  {/* Articles Grid (Bento Style) */}
+                  {/* Grille d'articles (Style Bento) */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 auto-rows-fr">
                      <AnimatePresence>
                         {gridPosts.map((post, idx) => (
@@ -215,32 +335,37 @@ const BlogPage: React.FC = () => {
                               animate={{ opacity: 1, y: 0 }} 
                               exit={{ opacity: 0, scale: 0.9 }}
                               transition={{ delay: idx * 0.1 }}
-                              className="group relative bg-white dark:bg-[#151e32] rounded-[2rem] overflow-hidden border border-gray-100 dark:border-white/5 hover:border-purple-500/30 transition-all hover:shadow-2xl flex flex-col"
+                              className="group relative bg-[var(--bg-surface)] rounded-[2rem] overflow-hidden border border-[var(--border-color)] hover:border-[var(--accent-color)]/30 transition-all hover:shadow-2xl flex flex-col glass"
                            >
                               <Link href={`/blog/${post.id}`} className="flex flex-col h-full">
                                  <div className="h-64 overflow-hidden relative">
-                                    <img src={post.image} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt={post.title} />
+                                    <Image 
+                                      src={post.image} 
+                                      alt={post.title}
+                                      fill
+                                      className="object-cover transition-transform duration-700 group-hover:scale-110" 
+                                    />
                                     <div className="absolute top-4 left-4 flex gap-2">
-                                       <span className="bg-black/70 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wide border border-white/10">{post.category}</span>
+                                       <span className="bg-[var(--bg-primary)]/70 backdrop-blur-md text-[var(--text-main)] text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wide border border-[var(--border-color)]">{post.category}</span>
                                     </div>
                                  </div>
                                  <div className="p-8 flex-1 flex flex-col">
-                                    <div className="flex items-center gap-2 text-xs text-gray-400 mb-4">
+                                    <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)] mb-4">
                                        <Calendar size={12}/> {post.date}
-                                       <span className="w-1 h-1 bg-gray-600 rounded-full"></span>
+                                       <span className="w-1 h-1 bg-[var(--border-color)] rounded-full"></span>
                                        <Clock size={12}/> {post.readTime}
                                     </div>
-                                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 leading-tight group-hover:text-purple-500 transition-colors">
+                                    <h3 className="text-xl font-bold text-[var(--text-main)] mb-4 leading-tight group-hover:text-[var(--accent-color)] transition-colors">
                                        {post.title}
                                     </h3>
-                                    <p className="text-gray-500 dark:text-gray-400 text-sm line-clamp-3 mb-6 flex-1">
+                                    <p className="text-[var(--text-secondary)] text-sm line-clamp-3 mb-6 flex-1">
                                        {post.excerpt}
                                     </p>
-                                    <div className="flex items-center justify-between border-t border-gray-100 dark:border-white/5 pt-4 mt-auto">
-                                       <div className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-gray-300">
+                                    <div className="flex items-center justify-between border-t border-[var(--border-color)] pt-4 mt-auto">
+                                       <div className="flex items-center gap-2 text-xs font-bold text-[var(--text-secondary)]">
                                           <User size={14}/> {post.author}
                                        </div>
-                                       <span className="text-purple-500 font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
+                                       <span className="text-[var(--accent-color)] font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
                                           {t('blog.read_more')} <ArrowRight size={16}/>
                                        </span>
                                     </div>
@@ -253,7 +378,7 @@ const BlogPage: React.FC = () => {
                </motion.div>
             )}
 
-            {/* VIEW: PODCASTS (NEW) */}
+            {/* VUE: PODCASTS */}
             {activeTab === 'podcasts' && (
                <motion.div
                   key="podcasts"
@@ -262,36 +387,36 @@ const BlogPage: React.FC = () => {
                   exit={{ opacity: 0, x: -20 }}
                   className="max-w-5xl mx-auto"
                >
-                  <div className="bg-[#151e32] rounded-[2.5rem] border border-white/10 p-8 md:p-12 relative overflow-hidden">
-                     <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none"></div>
+                  <div className="bg-[var(--bg-surface)] rounded-[2.5rem] border border-[var(--border-color)] p-8 md:p-12 relative overflow-hidden glass">
+                     <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[var(--accent-color)]/10 rounded-full blur-[120px] pointer-events-none"></div>
                      
                      <div className="flex items-center gap-4 mb-10 relative z-10">
-                        <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
+                        <div className="w-16 h-16 bg-gradient-to-br from-[var(--accent-color)] to-[var(--text-main)] rounded-2xl flex items-center justify-center text-[var(--bg-primary)] shadow-lg">
                            <Headphones size={32} />
                         </div>
                         <div>
-                           <h2 className="text-3xl font-black text-white">MGS <span className="text-purple-400">Cast</span></h2>
-                           <p className="text-gray-400">Conversations brutes sur la tech, le design et le futur.</p>
+                           <h2 className="text-3xl font-black text-[var(--text-main)]">{currentT.podcast.title} <span className="text-[var(--accent-color)]">{currentT.podcast.subtitle}</span></h2>
+                           <p className="text-[var(--text-secondary)]">{currentT.podcast.desc}</p>
                         </div>
                      </div>
 
                      <div className="space-y-4 relative z-10">
-                        {PODCAST_EPISODES.map((ep, i) => (
-                           <div key={ep.id} className="group bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl p-6 flex items-center gap-6 transition-all cursor-pointer">
-                              <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white group-hover:scale-110 transition-transform">
-                                 <PlayCircle size={24} className="group-hover:text-purple-400 transition-colors" />
+                        {PODCAST_EPISODES(language).map((ep, i) => (
+                           <div key={ep.id} className="group bg-[var(--bg-primary)]/30 hover:bg-[var(--bg-primary)]/50 border border-[var(--border-color)] rounded-2xl p-6 flex items-center gap-6 transition-all cursor-pointer">
+                              <div className="w-12 h-12 rounded-full bg-[var(--bg-surface)] flex items-center justify-center text-[var(--text-main)] group-hover:scale-110 transition-transform">
+                                 <PlayCircle size={24} className="group-hover:text-[var(--accent-color)] transition-colors" />
                               </div>
                               <div className="flex-1">
                                  <div className="flex items-center gap-3 mb-1">
-                                    <span className="text-xs font-bold text-purple-400 uppercase tracking-wider">Episode 0{ep.id}</span>
-                                    <span className="text-xs text-gray-500">• {ep.duration}</span>
+                                    <span className="text-xs font-bold text-[var(--accent-color)] uppercase tracking-wider">{currentT.podcast.episode} 0{ep.id}</span>
+                                    <span className="text-xs text-[var(--text-secondary)] opacity-60">• {ep.duration}</span>
                                  </div>
-                                 <h3 className="text-xl font-bold text-white mb-1 group-hover:text-purple-300 transition-colors">{ep.title}</h3>
-                                 <p className="text-sm text-gray-400">Invité : {ep.guest}</p>
+                                 <h3 className="text-xl font-bold text-[var(--text-main)] mb-1 group-hover:text-[var(--accent-color)] transition-colors">{ep.title}</h3>
+                                 <p className="text-sm text-[var(--text-secondary)] opacity-70">{currentT.guest} : {ep.guest}</p>
                               </div>
                               <div className="hidden md:flex items-center gap-4">
-                                 <button className="p-3 rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors"><Bookmark size={20}/></button>
-                                 <button className="px-6 py-2 bg-white text-black rounded-full font-bold text-sm hover:bg-purple-400 transition-colors">Écouter</button>
+                                 <button className="p-3 rounded-full hover:bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-main)] transition-colors"><Bookmark size={20}/></button>
+                                 <button className="px-6 py-2 bg-[var(--text-main)] text-[var(--bg-primary)] rounded-full font-bold text-sm hover:bg-[var(--accent-color)] hover:text-white transition-colors">{currentT.podcast.listen}</button>
                               </div>
                            </div>
                         ))}
@@ -303,22 +428,25 @@ const BlogPage: React.FC = () => {
 
       </div>
 
-      {/* 3. NEWSLETTER CTA (Full Width) */}
-      <section className="py-24 bg-gradient-to-r from-purple-900 to-black relative overflow-hidden">
-         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none"></div>
+      {/* 3. APPEL À L'ACTION NEWSLETTER */}
+      <section className="py-24 relative overflow-hidden">
+         <div className="absolute inset-0 bg-gradient-to-r from-[var(--accent-color)]/10 to-[var(--bg-primary)] z-0"></div>
+         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none z-0"></div>
          <div className="container mx-auto px-6 text-center relative z-10">
-            <h2 className="text-4xl md:text-6xl font-black text-white mb-6">Restez à l'<span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Avant-Garde</span>.</h2>
-            <p className="text-gray-300 text-lg mb-10 max-w-2xl mx-auto">
-               Recevez chaque semaine notre sélection d'articles, de ressources et d'inspirations. Pas de spam, juste de la valeur pure.
+            <h2 className="text-4xl md:text-6xl font-black text-[var(--text-main)] mb-6">
+               {currentT.newsletter.title} <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--accent-color)] to-[var(--text-secondary)]">{currentT.newsletter.titleAccent}</span>.
+            </h2>
+            <p className="text-[var(--text-secondary)] text-lg mb-10 max-w-2xl mx-auto">
+               {currentT.newsletter.desc}
             </p>
             <div className="max-w-md mx-auto relative">
                <input 
                   type="email" 
-                  placeholder="votre@email.com" 
-                  className="w-full pl-6 pr-36 py-5 rounded-full bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:bg-white/20 transition-all backdrop-blur-md"
+                  placeholder={currentT.newsletter.placeholder} 
+                  className="w-full pl-6 pr-36 py-5 rounded-full bg-[var(--bg-surface)]/50 border border-[var(--border-color)] text-[var(--text-main)] placeholder-[var(--text-secondary)]/50 focus:outline-none focus:border-[var(--accent-color)] focus:bg-[var(--bg-surface)] transition-all backdrop-blur-md"
                />
-               <button className="absolute right-2 top-2 bottom-2 px-8 bg-white text-black rounded-full font-bold hover:bg-purple-400 transition-colors">
-                  S'abonner
+               <button className="absolute right-2 top-2 bottom-2 px-8 btn-architect">
+                  {currentT.newsletter.button}
                </button>
             </div>
          </div>

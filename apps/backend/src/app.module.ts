@@ -8,24 +8,24 @@ import { UsersModule } from './modules/users/users.module';
 import { PagesModule } from './modules/pages/pages.module';
 import { MediaModule } from './modules/media/media.module';
 import { SettingsModule } from './modules/settings/settings.module';
+import { ContentModule } from './modules/content/content.module';
+import { IntegrationsModule } from './modules/integrations/integrations.module';
+import { AuditModule } from './modules/audit/audit.module';
 
 @Module({
   imports: [
-    // Global config
+    // Global modules
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
       cache: true,
     }),
-
-    // Redis cache
     CacheModule.register({
       isGlobal: true,
-      ttl: 300, // 5 minutes default
+      ttl: 300,
     }),
-
-    // Database module (Prisma)
     DatabaseModule,
+    AuditModule,
 
     // Feature modules
     AuthModule,
@@ -34,7 +34,8 @@ import { SettingsModule } from './modules/settings/settings.module';
     PagesModule,
     MediaModule,
     SettingsModule,
-    // IntegrationsModule, // Temporarily disabled due to TypeScript errors
+    ContentModule,
+    IntegrationsModule,
   ],
 })
 export class AppModule {}

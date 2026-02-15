@@ -5,12 +5,6 @@
       "static/chunks/_app-pages-browser_src_components_ChatBot_tsx.js"
     ]
   },
-  "components\\ClientWrapper.tsx -> @/components/CommonSections": {
-    "id": "components\\ClientWrapper.tsx -> @/components/CommonSections",
-    "files": [
-      "static/chunks/_app-pages-browser_src_components_CommonSections_tsx.js"
-    ]
-  },
   "components\\ClientWrapper.tsx -> @/components/dashboard/ClientSpace": {
     "id": "components\\ClientWrapper.tsx -> @/components/dashboard/ClientSpace",
     "files": [
@@ -27,30 +21,6 @@
     "id": "components\\ClientWrapper.tsx -> @/components/ui/Preloader",
     "files": [
       "static/chunks/_app-pages-browser_src_components_ui_Preloader_tsx.js"
-    ]
-  },
-  "components\\CommonSections.tsx -> ./common/ContactSections": {
-    "id": "components\\CommonSections.tsx -> ./common/ContactSections",
-    "files": [
-      "static/chunks/_app-pages-browser_src_components_common_ContactSections_tsx.js"
-    ]
-  },
-  "components\\CommonSections.tsx -> ./common/PortfolioSections": {
-    "id": "components\\CommonSections.tsx -> ./common/PortfolioSections",
-    "files": [
-      "static/chunks/_app-pages-browser_src_components_common_PortfolioSections_tsx.js"
-    ]
-  },
-  "components\\CommonSections.tsx -> ./common/ServicesSections": {
-    "id": "components\\CommonSections.tsx -> ./common/ServicesSections",
-    "files": [
-      "static/chunks/_app-pages-browser_src_components_common_ServicesSections_tsx.js"
-    ]
-  },
-  "components\\CommonSections.tsx -> ./common/TeamSections": {
-    "id": "components\\CommonSections.tsx -> ./common/TeamSections",
-    "files": [
-      "static/chunks/_app-pages-browser_src_components_common_TeamSections_tsx.js"
     ]
   }
 }

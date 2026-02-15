@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
@@ -35,11 +36,15 @@ const Lightbox: React.FC<LightboxProps> = ({ image, onClose, title }) => {
               <X size={24} />
             </button>
             
-            <img 
-              src={image} 
-              alt={title || "Lightbox"} 
-              className="w-full h-full object-contain rounded-lg shadow-2xl border border-white/10"
-            />
+            <div className="relative w-full h-[80vh]">
+              <Image 
+                src={image} 
+                alt={title || "Lightbox"} 
+                fill
+                className="object-contain rounded-lg shadow-2xl"
+                priority
+              />
+            </div>
             
             {title && (
               <div className="mt-4 text-white font-bold text-lg bg-black/50 px-4 py-2 rounded-full backdrop-blur-sm">

@@ -3,20 +3,53 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
-    domains: ['cdn.mindgraphixsolution.com', 'cloudflare.mindgraphixsolution.com'],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: '**.mindgraphixsolution.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.pravatar.cc',
+      },
+      {
+        protocol: 'https',
+        hostname: 'logo.clearbit.com',
+      },
     ],
-  },
-  i18n: {
-    locales: ['en', 'fr'],
-    defaultLocale: 'en',
   },
   experimental: {
     scrollRestoration: true,
+  },
+  async redirects() {
+    return [
+      {
+        source: '/fr',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/en',
+        destination: '/',
+        permanent: true,
+      },
+    ];
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/.well-known/appspecific/com.chrome.devtools.json',
+        destination: '/api/empty-json',
+      },
+    ];
   },
 };
 

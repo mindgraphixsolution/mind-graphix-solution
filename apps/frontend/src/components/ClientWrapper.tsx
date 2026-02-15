@@ -12,7 +12,6 @@ const AuthModal = dynamic(() => import('@/components/modals/AuthModal'), { ssr: 
 const ChatBot = dynamic(() => import('@/components/ChatBot'), { ssr: false });
 const ClientSpace = dynamic(() => import('@/components/dashboard/ClientSpace'), { ssr: false });
 const Preloader = dynamic(() => import('@/components/ui/Preloader'), { ssr: false });
-const CommonSections = dynamic(() => import('@/components/CommonSections'), { ssr: false });
 
 // Imports standards
 import Navbar from '@/components/Navbar';
@@ -25,6 +24,7 @@ import SpeedDial from '@/components/SpeedDial';
 
 export default function ClientWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [clientSpaceOpen, setClientSpaceOpen] = useState(false);
@@ -40,8 +40,16 @@ export default function ClientWrapper({ children }: { children: React.ReactNode 
   };
 
   useEffect(() => {
+    setMounted(true);
     mockDB.init();
     updateNotifications();
+    
+    // Désactiver le preloader après la première charge
+    const hasLoaded = sessionStorage.getItem('app_loaded');
+    if (hasLoaded) {
+      setIsLoading(false);
+    }
+
     window.addEventListener('mgs_db_update', updateNotifications);
     window.addEventListener('open-ai-chat', () => setIsChatOpen(true));
     return () => {
@@ -50,18 +58,14 @@ export default function ClientWrapper({ children }: { children: React.ReactNode 
     };
   }, []);
 
-  // Désactiver le preloader après la première charge (session-based pour éviter l'agacement)
-  useEffect(() => {
-    const hasLoaded = sessionStorage.getItem('app_loaded');
-    if (hasLoaded) {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const handlePreloaderComplete = () => {
+  const handlePreloaderComplete = React.useCallback(() => {
     setIsLoading(false);
     sessionStorage.setItem('app_loaded', 'true');
-  };
+  }, []);
+
+  if (!mounted) {
+    return <div className="opacity-0">{children}</div>;
+  }
 
   return (
     <>
@@ -89,13 +93,12 @@ export default function ClientWrapper({ children }: { children: React.ReactNode 
                {children}
             </main>
 
-            {!isAdminRoute && !isHomePage && <CommonSections />}
             {!isAdminRoute && <Footer />}
 
             {/* Float Action Center */}
             {!isAdminRoute && (
               <div className="fixed bottom-6 right-6 z-[9990] flex flex-col items-center gap-3">
-                 <ClientWidget onOpenClientSpace={() => setClientSpaceOpen(true)} notificationCount={notificationCount} />
+                 {/* Bouton Assistance IA Uniquement */}
                  <SpeedDial onOpenChat={() => setIsChatOpen(true)} />
               </div>
             )}

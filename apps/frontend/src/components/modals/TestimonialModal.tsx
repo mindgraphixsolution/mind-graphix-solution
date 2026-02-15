@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Star, User, MessageSquare, Send, CheckCircle2, Briefcase } from 'lucide-react';
+import { api } from '../../lib/api';
 
 interface TestimonialModalProps {
   isOpen: boolean;
@@ -28,17 +29,29 @@ const TestimonialModal: React.FC<TestimonialModalProps> = ({ isOpen, onClose }) 
     }
     
     setIsSubmitting(true);
-    // Simulation API
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setIsSubmitting(false);
-    setIsSuccess(true);
-    
-    setTimeout(() => {
-      onClose();
-      setIsSuccess(false);
-      setFormData({ name: '', role: '', content: '' });
-      setRating(0);
-    }, 2500);
+    try {
+      // Envoi réel via l'API (avec fallback mocké si nécessaire)
+      await api.submitTestimonial({
+        ...formData,
+        rating,
+        date: new Date().toISOString(),
+        status: 'pending' // Pour validation admin plus tard
+      });
+      
+      setIsSubmitting(false);
+      setIsSuccess(true);
+      
+      setTimeout(() => {
+        onClose();
+        setIsSuccess(false);
+        setFormData({ name: '', role: '', content: '' });
+        setRating(0);
+      }, 2500);
+    } catch (error) {
+      console.error("Erreur lors de l'envoi de l'avis:", error);
+      alert("Une erreur est survenue lors de l'envoi de votre avis. Veuillez réessayer.");
+      setIsSubmitting(false);
+    }
   };
 
   const MotionDiv = motion.div as any;

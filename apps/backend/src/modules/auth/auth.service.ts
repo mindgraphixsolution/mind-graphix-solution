@@ -17,7 +17,9 @@ import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'src/database/prisma.service';
-import * as bcrypt from 'bcrypt';
+import { AuditService } from '../audit/audit.service';
+import { AuditAction } from '@prisma/client';
+import * as bcrypt from 'bcryptjs';
 import { LoginDto, RegisterDto } from './dtos';
 
 @Injectable()
@@ -26,6 +28,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private auditService: AuditService,
   ) {}
 
   /**
@@ -63,6 +66,13 @@ export class AuthService {
 
     const tokens = await this.generateTokens(user.id);
 
+    await this.auditService.log({
+      action: AuditAction.CREATE,
+      resource: 'User',
+      resourceId: user.id,
+      userId: user.id,
+    });
+
     return {
       user,
       tokens,
@@ -90,6 +100,12 @@ export class AuthService {
 
     const tokens = await this.generateTokens(user.id);
 
+    await this.auditService.log({
+      action: AuditAction.LOGIN,
+      resource: 'Auth',
+      userId: user.id,
+    });
+
     return {
       user: {
         id: user.id,
@@ -103,7 +119,15 @@ export class AuthService {
   }
 
   async generateTokens(userId: string) {
-    const payload = { sub: userId };
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { role: true },
+    });
+
+    const payload = { 
+      sub: userId,
+      role: user?.role || 'VIEWER',
+    };
 
     const accessToken = this.jwtService.sign(payload, {
       expiresIn: '15m',

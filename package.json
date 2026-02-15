@@ -2,6 +2,10 @@
   "name": "mind-graphix-solution---premium",
   "private": true,
   "version": "1.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "description": "Mind Graphix - Enterprise CMS Platform",
   "type": "module",
   "scripts": {

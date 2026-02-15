@@ -36,7 +36,9 @@ const Tour: React.FC = () => {
     if (!isActive) return;
 
     const updateRect = () => {
-      const element = document.querySelector(TOUR_STEPS[stepIndex].target);
+      const step = TOUR_STEPS[stepIndex];
+      if (!step) return;
+      const element = document.querySelector(step.target);
       if (element) {
         setRect(element.getBoundingClientRect());
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -67,6 +69,7 @@ const Tour: React.FC = () => {
   if (!isActive || !rect) return null;
 
   const currentStep = TOUR_STEPS[stepIndex];
+  if (!currentStep) return null;
 
   // Calculate Popover Position
   const popoverStyle: React.CSSProperties = {

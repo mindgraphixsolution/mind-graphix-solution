@@ -13,13 +13,17 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
+/**
+ * Fournisseur de Langue - Gère le bilinguisme Français / Anglais
+ * Assure la traduction et l'accès aux données localisées.
+ */
 export const LanguageProvider: React.FC<{ children?: ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<Language>('fr');
-  const [isClient, setIsClient] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  // Load from localStorage on client only
+  // Chargement depuis le localStorage uniquement côté client
   React.useEffect(() => {
-    setIsClient(true);
+    setMounted(true);
     const saved = localStorage.getItem('mgs_language');
     if (saved === 'en' || saved === 'fr') {
       setLanguageState(saved);
@@ -33,13 +37,16 @@ export const LanguageProvider: React.FC<{ children?: ReactNode }> = ({ children 
     }
   };
 
+  /**
+   * Fonction de traduction par chemin (ex: 'hero.title')
+   */
   const t = (path: string): string => {
     const keys = path.split('.');
     let current: any = translations[language];
     
     for (const key of keys) {
       if (current[key] === undefined) {
-        console.warn(`Translation missing for key: ${path} in language: ${language}`);
+        console.warn(`Traduction manquante pour la clé: ${path} en langue: ${language}`);
         return path;
       }
       current = current[key];
@@ -48,11 +55,14 @@ export const LanguageProvider: React.FC<{ children?: ReactNode }> = ({ children 
     return current as string;
   };
 
-  // Helper to fetch data objects (arrays) based on current language
+  /**
+   * Récupère les objets de données (tableaux) selon la langue actuelle
+   */
   const getData = (key: keyof typeof DATA_BY_LANG['fr']) => {
     return DATA_BY_LANG[language][key];
   };
 
+  // Éviter les erreurs d'hydratation en retournant le fournisseur avec des valeurs par défaut jusqu'au montage
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t, getData }}>
       {children}

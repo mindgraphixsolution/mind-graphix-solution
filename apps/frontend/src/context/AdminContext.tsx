@@ -25,10 +25,12 @@ export const AdminProvider = ({ children }: { children?: ReactNode }) => {
   const [adminUser, setAdminUser] = useState<any | null>(null);
   const [roles, setRoles] = useState<any[]>([]);
   const [delegations, setDelegations] = useState<any[]>([]);
+  const [mounted, setMounted] = useState(false);
 
   const lastActivityRef = React.useRef(Date.now());
 
   useEffect(() => {
+    setMounted(true);
     mockDB.init();
     setRoles(mockDB.getRoles());
     setDelegations(mockDB.getDelegations());
@@ -164,7 +166,16 @@ export const AdminProvider = ({ children }: { children?: ReactNode }) => {
   };
 
   return (
-    <AdminContext.Provider value={{ isAuthenticated, is2FARequired, login, verify2FA, loginWithSSO, logout, adminUser, can }}>
+    <AdminContext.Provider value={{ 
+      isAuthenticated, 
+      is2FARequired, 
+      login, 
+      verify2FA, 
+      loginWithSSO, 
+      logout, 
+      adminUser, 
+      can 
+    }}>
       {children}
     </AdminContext.Provider>
   );

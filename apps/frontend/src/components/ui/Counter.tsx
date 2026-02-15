@@ -28,6 +28,7 @@ const Counter: React.FC<CounterProps> = ({ value, duration = 2, suffix = '' }) =
 
       return () => clearInterval(timer);
     }
+    return undefined;
   }, [inView, value, duration]);
 
   return (

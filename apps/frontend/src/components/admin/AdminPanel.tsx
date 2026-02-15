@@ -22,7 +22,7 @@ import PageBuilder from './PageBuilder';
 import MediaManager from './MediaManager'; 
 import SEOManager from './SEOManager';
 import AIAssistant from './AIAssistant'; 
-import { HomeManager, ServiceManager, TeamManager, PortfolioManager } from './AdminCMS';
+import { HomeManager, ServiceManager, TeamManager, PortfolioManager, TestimonialManager } from './AdminCMS';
 import SecuritySettings from './SecuritySettings'; 
 import RoleManager from './RoleManager'; 
 import BackupManager from './BackupManager';
@@ -43,8 +43,11 @@ const ScanningScreen = ({ onComplete }: { onComplete: () => void }) => {
     let currentStep = 0;
     const interval = setInterval(() => {
       if (currentStep < steps.length) {
-        setProgress(steps[currentStep].p);
-        setStatus(steps[currentStep].s);
+        const step = steps[currentStep];
+        if (step) {
+          setProgress(step.p);
+          setStatus(step.s);
+        }
         currentStep++;
       } else {
         clearInterval(interval);
@@ -102,6 +105,7 @@ const AdminPanel = () => {
       case 'dashboard': return <ModularDashboard />;
       case 'home_manager': return <HomeManager showToast={showToast} />;
       case 'services_manager': return <ServiceManager showToast={showToast} />;
+      case 'testimonials_manager': return <TestimonialManager showToast={showToast} />;
       case 'portfolio_manager': return <PortfolioManager showToast={showToast} />;
       case 'team_manager': return <TeamManager showToast={showToast} />;
       case 'intelligence': return <IntelligenceDashboard />;

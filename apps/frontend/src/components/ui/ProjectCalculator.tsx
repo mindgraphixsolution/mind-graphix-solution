@@ -51,7 +51,8 @@ const ProjectCalculator: React.FC = () => {
     const base = PROJECT_TYPES.find(t => t.id === projectType)?.basePrice || 0;
     
     // Multiplicateur de complexité
-    const complexityMultiplier = COMPLEXITY_LEVELS[complexity].multiplier;
+    const complexityLevel = COMPLEXITY_LEVELS[complexity];
+    const complexityMultiplier = complexityLevel ? complexityLevel.multiplier : 1;
     
     // Coût par page/écran (pour les sites/apps)
     // Moins cher si Branding
@@ -157,7 +158,7 @@ const ProjectCalculator: React.FC = () => {
                      </div>
                      <p className="text-sm text-gray-500 dark:text-gray-400 italic bg-gray-50 dark:bg-white/5 p-3 rounded-lg border border-gray-100 dark:border-white/5 flex items-start gap-2">
                         <Info size={14} className="mt-0.5 text-primary shrink-0"/>
-                        {COMPLEXITY_LEVELS[complexity].desc}
+                         {COMPLEXITY_LEVELS[complexity]?.desc}
                      </p>
                   </div>
                </div>
@@ -174,7 +175,7 @@ const ProjectCalculator: React.FC = () => {
                         <label className="text-sm font-bold text-gray-500 uppercase tracking-wider">Nombre de pages</label>
                         <span className="text-3xl font-black text-primary">{pages}</span>
                      </div>
-                     <input 
+                     <motion.input 
                         type="range" 
                         min="1" 
                         max="30" 
@@ -182,6 +183,8 @@ const ProjectCalculator: React.FC = () => {
                         value={pages} 
                         onChange={(e) => setPages(parseInt(e.target.value))}
                         className="w-full h-2 bg-gray-200 dark:bg-white/10 rounded-full appearance-none cursor-pointer accent-primary"
+                        whileHover={{ scale: 1.01 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 10 }}
                      />
                      <div className="flex justify-between text-xs text-gray-400 mt-3 font-medium">
                         <span>1 page</span>
@@ -254,21 +257,21 @@ const ProjectCalculator: React.FC = () => {
                     <span className="font-mono">{(PROJECT_TYPES.find(t=>t.id===projectType)?.basePrice || 0).toLocaleString()} FCFA</span>
                  </div>
                  {projectType !== 'branding' && (
-                    <div className="flex justify-between">
-                       <span className="text-gray-400">Pages ({pages})</span>
-                       <span className="font-mono">{(pages * 25000 * COMPLEXITY_LEVELS[complexity].multiplier).toLocaleString()} FCFA</span>
-                    </div>
+                     <div className="flex justify-between">
+                        <span className="text-gray-400">Pages ({pages})</span>
+                        <span className="font-mono">{(pages * 25000 * (COMPLEXITY_LEVELS[complexity]?.multiplier || 1)).toLocaleString()} FCFA</span>
+                     </div>
                  )}
                  {features.length > 0 && (
                     <div className="flex justify-between text-accent">
                        <span>Options ({features.length})</span>
-                       <span className="font-mono">+ {(features.reduce((acc, id) => acc + (EXTRA_FEATURES.find(f=>f.id===id)?.price || 0), 0) * COMPLEXITY_LEVELS[complexity].multiplier).toLocaleString()} FCFA</span>
+                       <span className="font-mono">+ {(features.reduce((acc, id) => acc + (EXTRA_FEATURES.find(f=>f.id===id)?.price || 0), 0) * (COMPLEXITY_LEVELS[complexity]?.multiplier || 1)).toLocaleString()} FCFA</span>
                     </div>
                  )}
-                 <div className="flex justify-between text-xs text-gray-500 pt-2 border-t border-white/10">
-                    <span>Multiplicateur {COMPLEXITY_LEVELS[complexity].label}</span>
-                    <span>x{COMPLEXITY_LEVELS[complexity].multiplier}</span>
-                 </div>
+                  <div className="flex justify-between text-xs text-gray-500 pt-2 border-t border-white/10">
+                     <span>Multiplicateur {COMPLEXITY_LEVELS[complexity]?.label}</span>
+                     <span>x{COMPLEXITY_LEVELS[complexity]?.multiplier}</span>
+                  </div>
               </div>
 
               <div className="mt-auto">

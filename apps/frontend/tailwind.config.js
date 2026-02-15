@@ -38,6 +38,8 @@ module.exports = {
       animation: {
         'fade-in': 'fade-in 0.3s ease-in-out',
         'slide-in-up': 'slide-in-up 0.3s ease-in-out',
+        'float': 'float 6s ease-in-out infinite',
+        'gradient-xy': 'gradient-xy 15s ease infinite',
       },
       keyframes: {
         'fade-in': {
@@ -47,6 +49,20 @@ module.exports = {
         'slide-in-up': {
           '0%': { transform: 'translateY(10px)', opacity: '0' },
           '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        'float': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+        'gradient-xy': {
+          '0%, 100%': {
+            'background-size': '400% 400%',
+            'background-position': 'left center',
+          },
+          '50%': {
+            'background-size': '200% 200%',
+            'background-position': 'right center',
+          },
         },
       },
     },

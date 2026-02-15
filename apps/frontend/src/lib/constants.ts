@@ -381,15 +381,6 @@ export const STATISTICS: Statistic[] = [
   { label: 'Heures de Code', value: 12000, suffix: '+' },
 ];
 
-export const PARTNERS = [
-  { name: "Orange", logo: "https://placehold.co/200x100/ff6600/ffffff?text=Orange" },
-  { name: "Canal+", logo: "https://placehold.co/200x100/000000/ffffff?text=Canal+" },
-  { name: "CFAO", logo: "https://placehold.co/200x100/003399/ffffff?text=CFAO" },
-  { name: "Coris Bank", logo: "https://placehold.co/200x100/cc0000/ffffff?text=Coris" },
-  { name: "Ecobank", logo: "https://placehold.co/200x100/0066cc/ffffff?text=Ecobank" },
-  { name: "TotalEnergies", logo: "https://placehold.co/200x100/ff0000/ffffff?text=Total" }
-];
-
 export const FAQS_FR = [
   { question: "Combien coûte un site internet ?", answer: "Le coût dépend de la complexité. Un site vitrine commence autour de 250.000 FCFA, tandis qu'un e-commerce complet nécessite un budget plus conséquent. Utilisez notre simulateur pour une estimation précise." },
   { question: "Quels sont vos délais ?", answer: "En moyenne, un site vitrine prend 2 semaines. Des projets plus complexes comme des applications sur mesure peuvent prendre 4 à 8 semaines." },

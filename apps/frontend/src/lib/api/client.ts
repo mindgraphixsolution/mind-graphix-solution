@@ -119,10 +119,21 @@ class ApiClient {
         signal: controller.signal,
       });
 
+      // Gérer le timeout et la réponse
       clearTimeout(timeoutId);
 
-      // Parser la réponse JSON
-      const data = await response.json();
+      // Lire le texte de la réponse pour éviter les erreurs de parsing JSON sur corps vide
+      const text = await response.text();
+      let data: any = {};
+      
+      if (text) {
+        try {
+          data = JSON.parse(text);
+        } catch (e) {
+          console.error(`Erreur de parsing JSON sur ${url}:`, text);
+          data = { message: text };
+        }
+      }
 
       if (!response.ok) {
         // Gérer les erreurs d'authentification

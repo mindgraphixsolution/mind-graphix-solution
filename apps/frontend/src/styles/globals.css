@@ -2,30 +2,197 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@layer base {
+  :root {
+    /* --- LIGHT THEME (Default - Stripe/Notion vibe) --- */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8fafc;
+    --bg-surface: #ffffff;
+    --text-main: #0f172a;
+    --text-secondary: #64748b;
+    --text-muted: #64748b;
+    --border-subtle: #e2e8f0;
+    --border-color: #e2e8f0;
+    --primary-color: #5e35b1;
+    --primary-fg: #ffffff;
+    --accent-color: #ffab00;
+    --accent-color-rgb: 255, 171, 0;
+    --accent-glow: rgba(255, 171, 0, 0.15);
+    --bg-accent: rgba(255, 171, 0, 0.08);
+    --success-color: #10b981;
+    --danger-color: #ef4444;
+    --radius-sm: 0.5rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+    --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  }
+
+  [data-theme="dark"] {
+    /* --- DARK THEME (Linear vibe) --- */
+    --bg-primary: #0f172a;
+    --bg-secondary: #020617;
+    --bg-surface: #1e293b;
+    --text-main: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #94a3b8;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --primary-color: #7c4dff;
+    --primary-fg: #ffffff;
+    --accent-color: #ffab00;
+    --accent-color-rgb: 255, 171, 0;
+    --accent-glow: rgba(255, 171, 0, 0.2);
+    --bg-accent: rgba(255, 171, 0, 0.12);
+    --success-color: #059669;
+    --danger-color: #dc2626;
+  }
+
+  [data-theme="high-contrast"] {
+    /* --- HIGH CONTRAST (Accessibility) --- */
+    --bg-primary: #000000;
+    --bg-secondary: #000000;
+    --bg-surface: #000000;
+    --text-main: #ffffff;
+    --text-secondary: #ffff00;
+    --text-muted: #ffff00;
+    --border-subtle: #ffffff;
+    --border-color: #ffffff;
+    --primary-color: #ffff00;
+    --primary-fg: #000000;
+    --accent-color: #00ffff;
+    --accent-color-rgb: 0, 255, 255;
+    --accent-glow: rgba(0, 255, 255, 0.3);
+    --bg-accent: rgba(0, 255, 255, 0.16);
+    --success-color: #00ff00;
+    --danger-color: #ff0000;
+    --radius-sm: 0px;
+    --radius-md: 0px;
+    --radius-lg: 0px;
+    --shadow-soft: none;
+  }
+
+  [data-theme="color-blind"] {
+    /* --- COLOR BLIND (Protanopia/Deuteranopia Friendly) --- */
+    --bg-primary: #f0f4f8;
+    --bg-secondary: #d9e2ec;
+    --bg-surface: #ffffff;
+    --text-main: #102a43;
+    --text-secondary: #486581;
+    --text-muted: #486581;
+    --border-subtle: #bcccdc;
+    --border-color: #bcccdc;
+    --primary-color: #334e68; /* Slate Blue */
+    --primary-fg: #ffffff;
+    --accent-color: #f0a30a; /* Safe Orange */
+    --accent-color-rgb: 240, 163, 10;
+    --accent-glow: rgba(240, 163, 10, 0.2);
+    --bg-accent: rgba(240, 163, 10, 0.12);
+    --success-color: #2bb0ed; /* Safe Blue */
+    --danger-color: #d64545; /* Dark Red/Brown distinct from green */
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-main);
+    transition: background-color 0.4s ease, color 0.4s ease;
+  }
 }
 
-html {
-  scroll-behavior: smooth;
+@layer components {
+  .ds-card {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+  }
+  
+  .ds-input {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-main);
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+  }
+  
+  .ds-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px var(--border-subtle);
+  }
+
+  .glass {
+    background: linear-gradient(180deg, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 100%);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  [data-theme="dark"] .glass {
+    background: linear-gradient(180deg, rgba(30,41,59,0.6) 0%, rgba(15,23,42,0.4) 100%);
+  }
+
+  .btn-architect {
+    background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
+    color: var(--primary-fg);
+    padding: 0.9rem 1.2rem;
+    border-radius: var(--radius-lg);
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    transition: transform 0.2s ease, box-shadow 0.3s ease, opacity 0.2s ease;
+    box-shadow: 0 10px 30px rgba(var(--accent-color-rgb), 0.3);
+  }
+  .btn-architect:hover {
+    transform: translateY(-1px) scale(1.01);
+    box-shadow: 0 16px 40px rgba(var(--accent-color-rgb), 0.4);
+  }
+  .btn-architect:active {
+    transform: translateY(0);
+    opacity: 0.95;
+  }
+
+  .outline-text {
+    -webkit-text-stroke: 1px rgba(255,255,255,0.25);
+    text-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  }
 }
 
-body {
-  font-family: 'Inter', system-ui, sans-serif;
-  background-color: #ffffff;
-  color: #1f2937;
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .bg-noise {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+  }
+  
+  [data-theme="dark"] .bg-noise {
+    opacity: 0.05;
+  }
+
+  @keyframes gradient-xy {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .animate-gradient-xy {
+    background-size: 200% 200%;
+    animation: gradient-xy 6s ease infinite;
+  }
 }
 
-body.dark {
-  background-color: #111827;
-  color: #f3f4f6;
-}
-
-/* Smooth transitions */
-* {
-  transition-property: background-color, border-color, color;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 200ms;
+/* Custom Selection Color */
+::selection {
+  background-color: var(--accent-color);
+  color: var(--bg-primary);
 }

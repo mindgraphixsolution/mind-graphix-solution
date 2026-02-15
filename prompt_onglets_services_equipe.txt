@@ -1,0 +1,229 @@
+# Prompt pour Créer des Onglets comme Services et Équipe
+
+## Objectif
+Créer un composant d'onglets réutilisable qui peut afficher différents contenus (Services, Équipe, etc.) avec une navigation par onglets élégante et interactive.
+
+## Structure Technique
+
+### 1. Composant Principal : TabsComponent
+```typescript
+interface TabItem {
+  id: string;
+  label: string;
+  icon: LucideIcon;
+  content: React.ComponentType;
+  badge?: string | number;
+}
+
+interface TabsProps {
+  tabs: TabItem[];
+  defaultTab?: string;
+  className?: string;
+  variant?: 'default' | 'pills' | 'underline' | 'cards';
+}
+```
+
+### 2. Fonctionnalités Attendues
+
+#### Navigation par Onglets
+- **Onglets horizontaux** avec icônes et labels
+- **Indicateur actif** animé avec Framer Motion
+- **Badge de notification** optionnel sur les onglets
+- **Responsive design** (dropdown sur mobile)
+
+#### Animations et Interactions
+- **Transition fluide** entre les contenus
+- **Effet hover** sur les onglets
+- **Animation de l'indicateur** de sélection
+- **Swipe gestures** pour mobile
+
+#### Variants de Design
+- **Default**: Onglets classiques avec underline
+- **Pills**: Onglets en forme de pilules
+- **Cards**: Onglets style cartes
+- **Underline**: Simple ligne en dessous
+
+### 3. Intégration avec les Composants Existantants
+
+#### Services Tab
+```typescript
+const ServicesTab = () => {
+  // Réutiliser la logique de Services.tsx
+  // Adapter pour l'affichage en onglets
+  return <Services />;
+};
+```
+
+#### Équipe Tab
+```typescript
+const TeamTab = () => {
+  // Réutiliser la logique de Team.tsx
+  // Adapter pour l'affichage en onglets
+  return <Team />;
+};
+```
+
+### 4. Implémentation Suggérée
+
+#### Structure des Fichiers
+```
+components/
+├── ui/
+│   ├── Tabs.tsx (composant principal)
+│   ├── TabItem.tsx (onglet individuel)
+│   └── TabContent.tsx (contenu)
+├── pages/
+│   ├── ServicesPage.tsx (page avec onglets)
+│   └── TeamPage.tsx (page avec onglets)
+```
+
+#### Utilisation Exemple
+```typescript
+const tabs = [
+  {
+    id: 'services',
+    label: 'Services',
+    icon: Briefcase,
+    content: ServicesTab,
+    badge: '8'
+  },
+  {
+    id: 'team',
+    label: 'Équipe',
+    icon: Users,
+    content: TeamTab
+  },
+  {
+    id: 'portfolio',
+    label: 'Portfolio',
+    icon: Image,
+    content: PortfolioTab
+  }
+];
+
+<Tabs 
+  tabs={tabs}
+  defaultTab="services"
+  variant="pills"
+  className="w-full"
+/>
+```
+
+### 5. Personnalisation et Thème
+
+#### Variables CSS
+```css
+:root {
+  --tabs-bg: var(--bg-primary);
+  --tabs-border: var(--border-subtle);
+  --tabs-active: var(--primary-color);
+  --tabs-text: var(--text-main);
+  --tabs-text-secondary: var(--text-secondary);
+}
+```
+
+#### Dark Mode Support
+- Adaptation automatique au thème
+- Variables CSS dynamiques
+- Transitions fluides
+
+### 6. Performance et Optimisation
+
+#### Lazy Loading
+- Chargement des contenus à la demande
+- Code splitting par onglet
+- Suspense boundaries
+
+#### Accessibility
+- Navigation au clavier (Tab, Shift+Tab)
+- ARIA labels et roles
+- Screen reader support
+
+### 7. Étapes de Développement
+
+#### Phase 1: Structure de Base
+1. Créer le composant `Tabs.tsx`
+2. Implémenter la navigation de base
+3. Ajouter les variants de design
+
+#### Phase 2: Intégration
+1. Adapter `Services.tsx` pour les onglets
+2. Adapter `Team.tsx` pour les onglets
+3. Créer les pages avec onglets
+
+#### Phase 3: Animations
+1. Ajouter Framer Motion
+2. Implémenter les transitions
+3. Optimiser les performances
+
+#### Phase 4: Finalisation
+1. Tests et debugging
+2. Documentation
+3. Déploiement
+
+### 8. Exemples d'Utilisation
+
+#### Page Services Complète
+```typescript
+const ServicesPage = () => {
+  const serviceTabs = [
+    { id: 'web', label: 'Web', content: WebServices },
+    { id: 'design', label: 'Design', content: DesignServices },
+    { id: 'marketing', label: 'Marketing', content: MarketingServices }
+  ];
+
+  return (
+    <div className="min-h-screen">
+      <Hero />
+      <Tabs tabs={serviceTabs} variant="cards" />
+      <CTA />
+    </div>
+  );
+};
+```
+
+#### Section Équipe dans About
+```typescript
+const AboutPage = () => {
+  const teamTabs = [
+    { id: 'core', label: 'Core Team', content: CoreTeam },
+    { id: 'advisors', label: 'Advisors', content: Advisors },
+    { id: 'alumni', label: 'Alumni', content: Alumni }
+  ];
+
+  return (
+    <div>
+      <AboutHero />
+      <Tabs tabs={teamTabs} variant="underline" />
+    </div>
+  );
+};
+```
+
+## Résultats Attendus
+
+### UX/UI
+- Navigation intuitive et rapide
+- Design moderne et cohérent
+- Animations fluides et élégantes
+
+### Technique
+- Code réutilisable et maintenable
+- Performance optimisée
+- Accessibilité conforme
+
+### Fonctionnel
+- Intégration transparente avec l'existant
+- Personnalisation facile
+- Extensibilité pour futurs onglets
+
+## Checklist de Validation
+
+- [ ] Composant Tabs fonctionnel
+- [ ] Intégration Services réussie
+- [ ] Intégration Équipe réussie
+- [ ] Animations fluides
+- [ ] Responsive design
+- [ ] Accessibilité conforme
+- [ ] Performance optimisée
+- [ ] Documentation complète

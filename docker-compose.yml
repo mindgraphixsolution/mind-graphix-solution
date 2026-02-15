@@ -98,13 +98,50 @@ services:
     image: grafana/grafana:latest
     container_name: mindgraphix-grafana
     ports:
-      - "3000:3000"
+      - "3002:3000"
     environment:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
     volumes:
       - grafana_data:/var/lib/grafana
     depends_on:
       - prometheus
+    networks:
+      - mindgraphix-network
+
+  # Backend API
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    container_name: mindgraphix-api
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@postgres:5432/${DB_NAME:-mindgraphix_dev}?schema=public
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-super-secret-key-change-me}
+      PORT: 3001
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - mindgraphix-network
+
+  # Frontend Application
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+    container_name: mindgraphix-web
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:3001
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
     networks:
       - mindgraphix-network
 

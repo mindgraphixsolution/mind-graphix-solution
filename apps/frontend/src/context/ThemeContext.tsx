@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-export type Theme = 'light' | 'dark' | 'high-contrast' | 'color-blind';
+export type Theme = 'light' | 'dark';
 
 interface ThemeContextType {
   theme: Theme;
@@ -12,13 +12,19 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+/**
+ * Fournisseur de Thème - Gère uniquement les modes Clair et Sombre
+ * Pour une lisibilité maximale et une architecture design épurée.
+ */
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [theme, setThemeState] = useState<Theme>('light');
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Initial load from local storage or system preference
+    setMounted(true);
+    // Chargement initial depuis le stockage local ou les préférences système
     const savedTheme = localStorage.getItem('mgs_theme') as Theme;
-    if (savedTheme) {
+    if (savedTheme === 'light' || savedTheme === 'dark') {
       setThemeState(savedTheme);
     } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
       setThemeState('dark');
@@ -26,18 +32,20 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   }, []);
 
   useEffect(() => {
-    // Apply theme to document
+    if (!mounted) return;
+    
+    // Application du thème au document HTML
     const root = document.documentElement;
     root.setAttribute('data-theme', theme);
     localStorage.setItem('mgs_theme', theme);
     
-    // Compatibility with Tailwind 'dark' class
+    // Compatibilité avec la classe 'dark' de Tailwind
     if (theme === 'dark') {
       root.classList.add('dark');
     } else {
       root.classList.remove('dark');
     }
-  }, [theme]);
+  }, [theme, mounted]);
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);

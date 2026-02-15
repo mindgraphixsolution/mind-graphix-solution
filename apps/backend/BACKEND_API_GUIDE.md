@@ -95,6 +95,29 @@ POST   /integrations/:id/sync/hubspot   - Sync HubSpot data
 POST   /integrations/:id/sync/mailchimp - Sync Mailchimp data
 ```
 
+### Content (`/api/v1/content`)
+```
+GET    /content/hero              - Get hero section data
+PUT    /content/hero              - Update hero section (ADMIN only)
+GET    /content/stats             - List all statistics
+POST   /content/stats             - Create new statistic (ADMIN only)
+GET    /content/services          - List all services
+POST   /content/services          - Create new service (ADMIN only)
+GET    /content/team              - List team members
+POST   /content/team              - Add team member (ADMIN only)
+GET    /content/portfolio         - List portfolio items
+POST   /content/portfolio         - Add portfolio item (ADMIN only)
+GET    /content/testimonials      - List testimonials
+POST   /content/testimonials      - Add testimonial (ADMIN only)
+GET    /content/blog              - List blog posts
+GET    /content/blog/:slug        - Get blog post by slug
+POST   /content/blog              - Create blog post (ADMIN only)
+GET    /content/partners          - List partners
+POST   /content/partners          - Add partner (ADMIN only)
+GET    /content/faq               - List FAQ items
+POST   /content/faq               - Add FAQ item (ADMIN only)
+```
+
 ### Health (`/health`)
 ```
 GET    /health               - Health check endpoint
