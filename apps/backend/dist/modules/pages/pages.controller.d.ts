@@ -5,13 +5,13 @@ export declare class PagesController {
     create(createPageDto: CreatePageDto, req: any): Promise<{
         id: string;
         createdAt: Date;
-        status: import("@prisma/client").$Enums.PageStatus;
+        status: import(".prisma/client").$Enums.PageStatus;
         updatedAt: Date;
         description: string | null;
         title: string;
         content: string;
         slug: string;
-        visibility: import("@prisma/client").$Enums.PageVisibility;
+        visibility: import(".prisma/client").$Enums.PageVisibility;
         publishedAt: Date | null;
         scheduledAt: Date | null;
         metaTitle: string | null;
@@ -28,13 +28,13 @@ export declare class PagesController {
     findAll(skip?: number, take?: number): Promise<{
         id: string;
         createdAt: Date;
-        status: import("@prisma/client").$Enums.PageStatus;
+        status: import(".prisma/client").$Enums.PageStatus;
         updatedAt: Date;
         description: string | null;
         title: string;
         content: string;
         slug: string;
-        visibility: import("@prisma/client").$Enums.PageVisibility;
+        visibility: import(".prisma/client").$Enums.PageVisibility;
         publishedAt: Date | null;
         scheduledAt: Date | null;
         metaTitle: string | null;
@@ -51,13 +51,13 @@ export declare class PagesController {
     findBySlug(slug: string): Promise<{
         id: string;
         createdAt: Date;
-        status: import("@prisma/client").$Enums.PageStatus;
+        status: import(".prisma/client").$Enums.PageStatus;
         updatedAt: Date;
         description: string | null;
         title: string;
         content: string;
         slug: string;
-        visibility: import("@prisma/client").$Enums.PageVisibility;
+        visibility: import(".prisma/client").$Enums.PageVisibility;
         publishedAt: Date | null;
         scheduledAt: Date | null;
         metaTitle: string | null;
@@ -74,13 +74,13 @@ export declare class PagesController {
     findOne(id: string): Promise<{
         id: string;
         createdAt: Date;
-        status: import("@prisma/client").$Enums.PageStatus;
+        status: import(".prisma/client").$Enums.PageStatus;
         updatedAt: Date;
         description: string | null;
         title: string;
         content: string;
         slug: string;
-        visibility: import("@prisma/client").$Enums.PageVisibility;
+        visibility: import(".prisma/client").$Enums.PageVisibility;
         publishedAt: Date | null;
         scheduledAt: Date | null;
         metaTitle: string | null;
@@ -97,13 +97,13 @@ export declare class PagesController {
     update(id: string, updatePageDto: UpdatePageDto, req: any): Promise<{
         id: string;
         createdAt: Date;
-        status: import("@prisma/client").$Enums.PageStatus;
+        status: import(".prisma/client").$Enums.PageStatus;
         updatedAt: Date;
         description: string | null;
         title: string;
         content: string;
         slug: string;
-        visibility: import("@prisma/client").$Enums.PageVisibility;
+        visibility: import(".prisma/client").$Enums.PageVisibility;
         publishedAt: Date | null;
         scheduledAt: Date | null;
         metaTitle: string | null;
@@ -120,13 +120,13 @@ export declare class PagesController {
     publish(id: string, req: any): Promise<{
         id: string;
         createdAt: Date;
-        status: import("@prisma/client").$Enums.PageStatus;
+        status: import(".prisma/client").$Enums.PageStatus;
         updatedAt: Date;
         description: string | null;
         title: string;
         content: string;
         slug: string;
-        visibility: import("@prisma/client").$Enums.PageVisibility;
+        visibility: import(".prisma/client").$Enums.PageVisibility;
         publishedAt: Date | null;
         scheduledAt: Date | null;
         metaTitle: string | null;
@@ -143,13 +143,13 @@ export declare class PagesController {
     delete(id: string): Promise<{
         id: string;
         createdAt: Date;
-        status: import("@prisma/client").$Enums.PageStatus;
+        status: import(".prisma/client").$Enums.PageStatus;
         updatedAt: Date;
         description: string | null;
         title: string;
         content: string;
         slug: string;
-        visibility: import("@prisma/client").$Enums.PageVisibility;
+        visibility: import(".prisma/client").$Enums.PageVisibility;
         publishedAt: Date | null;
         scheduledAt: Date | null;
         metaTitle: string | null;

@@ -7,7 +7,7 @@ export declare class MediaController {
         id: string;
         createdAt: Date;
         name: string;
-        type: import("@prisma/client").$Enums.MediaType;
+        type: import(".prisma/client").$Enums.MediaType;
         description: string | null;
         tags: string[];
         mimeType: string;
@@ -27,7 +27,7 @@ export declare class MediaController {
         id: string;
         createdAt: Date;
         name: string;
-        type: import("@prisma/client").$Enums.MediaType;
+        type: import(".prisma/client").$Enums.MediaType;
         description: string | null;
         tags: string[];
         mimeType: string;
@@ -47,7 +47,7 @@ export declare class MediaController {
         id: string;
         createdAt: Date;
         name: string;
-        type: import("@prisma/client").$Enums.MediaType;
+        type: import(".prisma/client").$Enums.MediaType;
         description: string | null;
         tags: string[];
         mimeType: string;
@@ -67,7 +67,7 @@ export declare class MediaController {
         id: string;
         createdAt: Date;
         name: string;
-        type: import("@prisma/client").$Enums.MediaType;
+        type: import(".prisma/client").$Enums.MediaType;
         description: string | null;
         tags: string[];
         mimeType: string;
@@ -87,7 +87,7 @@ export declare class MediaController {
         id: string;
         createdAt: Date;
         name: string;
-        type: import("@prisma/client").$Enums.MediaType;
+        type: import(".prisma/client").$Enums.MediaType;
         description: string | null;
         tags: string[];
         mimeType: string;
@@ -107,7 +107,7 @@ export declare class MediaController {
         id: string;
         createdAt: Date;
         name: string;
-        type: import("@prisma/client").$Enums.MediaType;
+        type: import(".prisma/client").$Enums.MediaType;
         description: string | null;
         tags: string[];
         mimeType: string;

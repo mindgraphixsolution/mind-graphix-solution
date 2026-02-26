@@ -369,9 +369,6 @@ const Portfolio: React.FC = () => {
                       exit={{ opacity: 0, scale: 0.95 }}
                       transition={{ duration: 0.3 }}
                       className={`${spanClass} relative group cursor-pointer rounded-[2rem] overflow-hidden border border-[var(--border-color)] shadow-xl bg-[var(--bg-primary)] hover:border-[var(--accent-color)] transition-all duration-500`}
-                      onClick={() => setSelectedImage({ url: item.image, title: item.title })}
-                    >
-                      className={`group relative rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-all border border-[var(--border-color)] hover:border-[var(--accent-color)] ${spanClass}`}
                       onMouseEnter={() => setHoveredId(item.id)}
                       onMouseLeave={() => setHoveredId(null)}
                       onClick={() => setSelectedImage({ url: item.image, title: item.title })}

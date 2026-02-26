@@ -55,7 +55,6 @@ let AuthController = class AuthController {
 };
 exports.AuthController = AuthController;
 __decorate([
-    (0, common_1.Version)('1'),
     (0, common_1.Post)('register'),
     (0, swagger_1.ApiOperation)({ summary: 'Register a new user' }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'User registered successfully' }),
@@ -65,7 +64,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "register", null);
 __decorate([
-    (0, common_1.Version)('1'),
     (0, common_1.Post)('login'),
     (0, swagger_1.ApiOperation)({ summary: 'Login user' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Login successful' }),
@@ -76,7 +74,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([
-    (0, common_1.Version)('1'),
     (0, common_1.Post)('refresh'),
     (0, swagger_1.ApiOperation)({ summary: 'Refresh access token' }),
     __param(0, (0, common_1.Body)('refreshToken')),
@@ -86,7 +83,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "refresh", null);
 __decorate([
-    (0, common_1.Version)('1'),
     (0, common_1.Post)('logout'),
     (0, swagger_1.ApiOperation)({ summary: 'Logout user' }),
     __param(0, (0, common_1.Body)()),
@@ -97,6 +93,9 @@ __decorate([
 ], AuthController.prototype, "logout", null);
 exports.AuthController = AuthController = __decorate([
     (0, swagger_1.ApiTags)('Auth'),
-    (0, common_1.Controller)('auth'),
+    (0, common_1.Controller)({
+        path: 'auth',
+        version: '1',
+    }),
     __metadata("design:paramtypes", [auth_service_1.AuthService])
 ], AuthController);

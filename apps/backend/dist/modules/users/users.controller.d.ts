@@ -8,8 +8,8 @@ export declare class UsersController {
         email: string;
         firstName: string;
         lastName: string;
-        role: import("@prisma/client").$Enums.UserRole;
-        status: import("@prisma/client").$Enums.UserStatus;
+        role: import(".prisma/client").$Enums.UserRole;
+        status: import(".prisma/client").$Enums.UserStatus;
     }>;
     findAll(skip?: number, take?: number): Promise<{
         id: string;
@@ -17,8 +17,8 @@ export declare class UsersController {
         email: string;
         firstName: string;
         lastName: string;
-        role: import("@prisma/client").$Enums.UserRole;
-        status: import("@prisma/client").$Enums.UserStatus;
+        role: import(".prisma/client").$Enums.UserRole;
+        status: import(".prisma/client").$Enums.UserStatus;
         lastLoginAt: Date | null;
     }[]>;
     findOne(id: string): Promise<{
@@ -27,8 +27,8 @@ export declare class UsersController {
         email: string;
         firstName: string;
         lastName: string;
-        role: import("@prisma/client").$Enums.UserRole;
-        status: import("@prisma/client").$Enums.UserStatus;
+        role: import(".prisma/client").$Enums.UserRole;
+        status: import(".prisma/client").$Enums.UserStatus;
         avatar: string | null;
         phone: string | null;
         bio: string | null;
@@ -41,8 +41,8 @@ export declare class UsersController {
         email: string;
         firstName: string;
         lastName: string;
-        role: import("@prisma/client").$Enums.UserRole;
-        status: import("@prisma/client").$Enums.UserStatus;
+        role: import(".prisma/client").$Enums.UserRole;
+        status: import(".prisma/client").$Enums.UserStatus;
         updatedAt: Date;
     }>;
     delete(id: string): Promise<{

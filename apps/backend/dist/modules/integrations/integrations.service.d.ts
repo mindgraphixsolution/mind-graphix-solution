@@ -9,7 +9,7 @@ export declare class IntegrationsService {
         createdAt: Date;
         name: string;
         updatedAt: Date;
-        type: import("@prisma/client").$Enums.IntegrationType;
+        type: import(".prisma/client").$Enums.IntegrationType;
         isActive: boolean;
         apiKey: string | null;
         apiSecret: string | null;
@@ -27,7 +27,7 @@ export declare class IntegrationsService {
         createdAt: Date;
         name: string;
         updatedAt: Date;
-        type: import("@prisma/client").$Enums.IntegrationType;
+        type: import(".prisma/client").$Enums.IntegrationType;
         isActive: boolean;
         apiKey: string | null;
         apiSecret: string | null;
@@ -42,7 +42,7 @@ export declare class IntegrationsService {
         createdAt: Date;
         name: string;
         updatedAt: Date;
-        type: import("@prisma/client").$Enums.IntegrationType;
+        type: import(".prisma/client").$Enums.IntegrationType;
         isActive: boolean;
         apiKey: string | null;
         apiSecret: string | null;
@@ -57,7 +57,7 @@ export declare class IntegrationsService {
         createdAt: Date;
         name: string;
         updatedAt: Date;
-        type: import("@prisma/client").$Enums.IntegrationType;
+        type: import(".prisma/client").$Enums.IntegrationType;
         isActive: boolean;
         apiKey: string | null;
         apiSecret: string | null;
@@ -72,7 +72,7 @@ export declare class IntegrationsService {
         createdAt: Date;
         name: string;
         updatedAt: Date;
-        type: import("@prisma/client").$Enums.IntegrationType;
+        type: import(".prisma/client").$Enums.IntegrationType;
         isActive: boolean;
         apiKey: string | null;
         apiSecret: string | null;
@@ -87,7 +87,7 @@ export declare class IntegrationsService {
         createdAt: Date;
         name: string;
         updatedAt: Date;
-        type: import("@prisma/client").$Enums.IntegrationType;
+        type: import(".prisma/client").$Enums.IntegrationType;
         isActive: boolean;
         apiKey: string | null;
         apiSecret: string | null;
@@ -102,7 +102,7 @@ export declare class IntegrationsService {
         createdAt: Date;
         name: string;
         updatedAt: Date;
-        type: import("@prisma/client").$Enums.IntegrationType;
+        type: import(".prisma/client").$Enums.IntegrationType;
         isActive: boolean;
         apiKey: string | null;
         apiSecret: string | null;
@@ -117,7 +117,7 @@ export declare class IntegrationsService {
         createdAt: Date;
         name: string;
         updatedAt: Date;
-        type: import("@prisma/client").$Enums.IntegrationType;
+        type: import(".prisma/client").$Enums.IntegrationType;
         isActive: boolean;
         apiKey: string | null;
         apiSecret: string | null;
@@ -130,7 +130,7 @@ export declare class IntegrationsService {
     getStatus(id: string): Promise<{
         id: string;
         name: string;
-        type: import("@prisma/client").$Enums.IntegrationType;
+        type: import(".prisma/client").$Enums.IntegrationType;
         isActive: boolean;
         lastSyncAt: Date | null;
         syncError: string | null;
@@ -140,7 +140,7 @@ export declare class IntegrationsService {
         createdAt: Date;
         name: string;
         updatedAt: Date;
-        type: import("@prisma/client").$Enums.IntegrationType;
+        type: import(".prisma/client").$Enums.IntegrationType;
         isActive: boolean;
         apiKey: string | null;
         apiSecret: string | null;
@@ -155,7 +155,7 @@ export declare class IntegrationsService {
         createdAt: Date;
         name: string;
         updatedAt: Date;
-        type: import("@prisma/client").$Enums.IntegrationType;
+        type: import(".prisma/client").$Enums.IntegrationType;
         isActive: boolean;
         apiKey: string | null;
         apiSecret: string | null;
@@ -171,8 +171,8 @@ export declare class IntegrationsService {
         action: string;
         createdAt: Date;
         status: string;
-        payload: import("@prisma/client/runtime/library").JsonValue | null;
         integrationId: string;
+        payload: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     getActionLogs(integrationId: string, limit?: number): Promise<{
         error: string | null;
@@ -180,8 +180,8 @@ export declare class IntegrationsService {
         action: string;
         createdAt: Date;
         status: string;
-        payload: import("@prisma/client/runtime/library").JsonValue | null;
         integrationId: string;
+        payload: import("@prisma/client/runtime/library").JsonValue | null;
     }[]>;
     syncWithStripe(integrationId: string): Promise<{
         success: boolean;

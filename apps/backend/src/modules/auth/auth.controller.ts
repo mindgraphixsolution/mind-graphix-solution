@@ -5,11 +5,13 @@ import { AuthService } from './auth.service';
 import { LoginDto, RegisterDto } from './dtos';
 
 @ApiTags('Auth')
-@Controller('auth')
+@Controller({
+  path: 'auth',
+  version: '1',
+})
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Version('1')
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
   @ApiResponse({ status: 201, description: 'User registered successfully' })
@@ -17,7 +19,6 @@ export class AuthController {
     return this.authService.register(dto);
   }
 
-  @Version('1')
   @Post('login')
   @ApiOperation({ summary: 'Login user' })
   @ApiResponse({ status: 200, description: 'Login successful' })
@@ -37,7 +38,6 @@ export class AuthController {
     });
   }
 
-  @Version('1')
   @Post('refresh')
   @ApiOperation({ summary: 'Refresh access token' })
   async refresh(@Body('refreshToken') refreshToken: string, @Res() res: Response) {
@@ -53,7 +53,6 @@ export class AuthController {
     return res.json({ accessToken: tokens.accessToken });
   }
 
-  @Version('1')
   @Post('logout')
   @ApiOperation({ summary: 'Logout user' })
   async logout(@Body() body: { userId: string; refreshToken: string }, @Res() res: Response) {

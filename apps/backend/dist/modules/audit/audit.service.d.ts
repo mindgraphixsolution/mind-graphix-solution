@@ -13,14 +13,14 @@ export declare class AuditService {
         userAgent?: string;
     }): Promise<{
         id: string;
-        action: import("@prisma/client").$Enums.AuditAction;
+        action: import(".prisma/client").$Enums.AuditAction;
         resource: string;
         resourceId: string | null;
         changes: import("@prisma/client/runtime/library").JsonValue | null;
+        userId: string;
         ipAddress: string | null;
         userAgent: string | null;
         createdAt: Date;
-        userId: string;
     }>;
     getLogs(filter: {
         userId?: string;
@@ -34,13 +34,13 @@ export declare class AuditService {
         };
     } & {
         id: string;
-        action: import("@prisma/client").$Enums.AuditAction;
+        action: import(".prisma/client").$Enums.AuditAction;
         resource: string;
         resourceId: string | null;
         changes: import("@prisma/client/runtime/library").JsonValue | null;
+        userId: string;
         ipAddress: string | null;
         userAgent: string | null;
         createdAt: Date;
-        userId: string;
     })[]>;
 }
